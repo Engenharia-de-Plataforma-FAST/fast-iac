@@ -1,0 +1,13 @@
+project_name: "fast2023"
+project_domain: "cesar.school"
+
+jenkins_image: "jenkins/jenkins"
+jenkins_version: "2.424-jdk21"
+
+sonarqube_image: "sonarqube"
+sonarqube_version: "9.9.2-community"
+sonarqube_db_user: "sonar"
+sonarqube_db_password: "sonar"
+sonarqube_db_name: "sonar"
+sonarqube_db_server: "sonardb"
+sonarqube_db_server_port: "5432"

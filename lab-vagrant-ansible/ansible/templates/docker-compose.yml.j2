@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+
+  jenkins:
+    image: {{ jenkins_image }}:{{ jenkins_version }}
+    ports:
+    - 8080:8080
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 3G
+    volumes:
+      - type: volume
+        source: jenkins_home
+        target: /var/jenkins_home/
+    networks:
+      - cicd_net    
+
+  sonar:
+    image: {{ sonarqube_image }}:{{ sonarqube_version }}
+    ports:
+      - 9000:9000
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 2G
+    environment:
+      - "SONARQUBE_JDBC_USERNAME={{ sonarqube_db_user }}"
+      - "SONARQUBE_JDBC_PASSWORD={{ sonarqube_db_password }}"
+      - "SONARQUBE_JDBC_URL=jdbc:postgresql://{{ sonarqube_db_server }}:{{ sonarqube_db_server_port }}/{{ sonarqube_db_name }}"
+    volumes:
+      - type: volume
+        source: sonarqube_conf
+        target: /opt/sonarqube/conf
+      - type: volume
+        source: sonarqube_data
+        target: /opt/sonarqube/data
+      - type: volume
+        source: sonarqube_extensions
+        target: /opt/sonarqube/extensions
+      - type: volume
+        source: sonarqube_bundled-plugins
+        target: /opt/sonarqube/lib/bundled-plugins
+    networks:
+      - cicd_net
+      - sonar_net
+
+  sonardb:
+    image: postgres:9.6
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 512M
+    environment:
+      POSTGRES_USER: {{ sonarqube_db_user }}
+      POSTGRES_PASSWORD: {{ sonarqube_db_password }}
+    volumes:
+      - type: volume
+        source: sonar_postgres
+        target: /var/lib/postgresql/data
+    networks:
+      - sonar_net
+
+networks:
+  cicd_net:
+    name: cicd_net
+  sonar_net:
+    name: sonar_net
+
+volumes:
+  jenkins_home:
+    external: true
+  sonarqube_conf:
+    external: true
+  sonarqube_data:
+    external: true
+  sonarqube_extensions:
+    external: true
+  sonarqube_bundled-plugins:
+    external: true
+  sonar_postgres:
+    external: true
