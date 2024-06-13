@@ -1,6 +1,6 @@
-# FAST 2024 - CESAR School
+# FAST - Bootcamp de Enhenharia de Plataforma
 
-- [FAST 2024 - CESAR School](#fast-2024---cesar-school)
+- [FAST - Bootcamp de Enhenharia de Plataforma](#fast)
   - [1. Download GCP credentials](#1-download-gcp-credentials)
   - [2. Edit parameters](#2-edit-parameters)
   - [3. Allow SSH](#3-allow-ssh)

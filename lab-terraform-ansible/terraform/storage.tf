@@ -10,7 +10,7 @@ resource "google_storage_bucket" "bucket-statefile" {
   }
 
   labels = {
-    "environment" = "fast2023"
+    "environment" = "fast2024"
   }
 
 }

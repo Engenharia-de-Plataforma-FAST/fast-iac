@@ -19,8 +19,8 @@ variable "google_project_number" {
 variable "google_instance_type" {
   description = "Google Instance Type"
   type        = string
-  default     = "e2-standard-2"
-  # default     = "e2-small"
+  # default     = "e2-standard-2"
+  default     = "e2-small"
 }
 
 variable "google_instance_image" {
@@ -44,7 +44,7 @@ variable "ssh_key_path_default_user" {
 variable "bucket_tfsatefile_name" {
   description = "Name of the Bucket to save Statefile"
   type        = string
-  default     = "bucket-statefile-fast2023"
+  default     = "bucket-statefile-fast2024"
 }
 
 variable "storage_class" {
