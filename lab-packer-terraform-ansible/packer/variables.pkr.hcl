@@ -7,26 +7,36 @@ variable "ssh_private_key_file" {
   type = string
 }
 
-variable "google_project_id" {
-  type = string
-}
-
-variable "google_zone" {
-  type = string
-}
-
-variable "google_machine_type" {
-  type = string
-}
-
 variable "ansible_playbook_path" {
   type = string
 }
 
-variable "project_image_name" {
+variable "image_name" {
   type = string
 }
 
-variable "project_image_description" {
+variable "image_description" {
+  type = string
+}
+
+variable "region" {
+  type = string
+  default = "us-east-1"
+}
+
+variable "instance_type" {
+  type = string
+  default = "t3.micro"
+}
+
+variable "source_ami" {
+  type = string
+}
+
+variable "subnet_id" {
+  type = string
+}
+
+variable "ssh_username" {
   type = string
 }
