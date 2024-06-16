@@ -29,10 +29,6 @@ variable "instance_type" {
   default = "t3.micro"
 }
 
-variable "source_ami" {
-  type = string
-}
-
 variable "subnet_id" {
   type = string
 }

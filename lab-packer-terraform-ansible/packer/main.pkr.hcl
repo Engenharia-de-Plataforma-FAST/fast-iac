@@ -17,11 +17,19 @@ source "amazon-ebs" "vm-instance" {
   instance_type   = var.instance_type
   region          = var.region
   subnet_id       = var.subnet_id
-  source_ami      = var.source_ami
+  source_ami_filter {
+    filters = {
+      name                = "amzn2-ami-hvm*"
+      root-device-type    = "ebs"
+      virtualization-type = "hvm"
+    }
+    most_recent = true
+    owners      = ["amazon"]
+  }
+
   ssh_username    = var.ssh_username
   tags = {
-    Name = "AMI FAST",
-    App  = "Jenkins"
+    Name = "AMI FAST"
   }
 }
 
