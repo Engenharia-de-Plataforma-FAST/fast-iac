@@ -13,7 +13,7 @@ variable "google_zone" {
 variable "google_project_number" {
   description = "Google Project Number"
   type        = string
-  default     = "305666185264"
+  default     = "420759343632"
 }
 
 variable "google_instance_type" {
@@ -26,7 +26,7 @@ variable "google_instance_type" {
 variable "google_instance_image" {
   description = "Google Instance Image"
   type        = string
-  default     = "centos-cloud/centos-stream-8"
+  default     = "centos-cloud/centos-stream-9"
 }
 
 variable "google_network" {
