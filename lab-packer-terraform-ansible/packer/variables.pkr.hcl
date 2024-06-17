@@ -29,10 +29,6 @@ variable "instance_type" {
   default = "t3.micro"
 }
 
-variable "subnet_id" {
-  type = string
-}
-
 variable "ssh_username" {
   type = string
 }

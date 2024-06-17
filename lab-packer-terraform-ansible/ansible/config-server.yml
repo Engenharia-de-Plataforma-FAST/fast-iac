@@ -4,7 +4,6 @@
     name: "{{ item }}"
     state: present
   loop:
-    - git
     - docker
 
 - name: Install dependencies by pip

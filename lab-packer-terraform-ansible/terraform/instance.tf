@@ -1,25 +1,38 @@
-resource "google_compute_instance" "default" {
-  provider = google
-  name = "terraform-ansible-instance"
-  machine_type = var.google_instance_type
-  zone = var.google_zone
-  metadata = {
-    ssh-keys = "ansible:${file(var.ssh_key_path_default_user)}"
-  }
+data "aws_caller_identity" "current" {}
 
-
-  network_interface {
-    network = google_compute_network.network.name
-    subnetwork = google_compute_subnetwork.subnet.name
-    access_config {}
-  }
-
-  tags = ["allow-http-services", "allow-ssh"]
-
-  boot_disk {
-    initialize_params {
-      image = var.google_instance_image
+data "aws_ami" "fast_ami" {
+    most_recent = true
+    filter {
+        name   = "name"
+        values = [var.instance_ami]
     }
+    owners = [data.aws_caller_identity.current.account_id]
+}
+
+resource "tls_private_key" "fast_key" {
+    algorithm = "RSA"
+    rsa_bits  = 4096
+}
+
+resource "aws_key_pair" "generated_key" {
+    key_name   = var.key_name
+    public_key = tls_private_key.fast_key.public_key_openssh
+}
+
+resource "aws_instance" "fast" {
+  ami             = data.aws_ami.fast_ami.id
+  instance_type   = var.instance_type
+  key_name        = aws_key_pair.generated_key.key_name
+  security_groups = [aws_security_group.fast_sg.id]
+  private_ip      = "10.0.1.100"
+  subnet_id       = aws_subnet.public_subnet.id
+
+  tags = {
+    Name = "nginx"
   }
-  
+}
+
+output "private_key" {
+  value     = tls_private_key.fast_key.private_key_pem
+  sensitive = true
 }

@@ -2,4 +2,4 @@
 
 terraform init
 terraform validate
-terraform apply -var-file=input.tfvars -auto-approve
+terraform apply -auto-approve

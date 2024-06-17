@@ -16,7 +16,7 @@ source "amazon-ebs" "vm-instance" {
   ami_description = var.image_description
   instance_type   = var.instance_type
   region          = var.region
-  subnet_id       = var.subnet_id
+  ssh_username    = var.ssh_username
   source_ami_filter {
     filters = {
       name                = "amzn2-ami-hvm*"
@@ -26,8 +26,6 @@ source "amazon-ebs" "vm-instance" {
     most_recent = true
     owners      = ["amazon"]
   }
-
-  ssh_username    = var.ssh_username
   tags = {
     Name = "AMI FAST"
   }

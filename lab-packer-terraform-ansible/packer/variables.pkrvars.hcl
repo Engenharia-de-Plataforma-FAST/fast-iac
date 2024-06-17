@@ -4,7 +4,6 @@ ssh_public_key = "centos:ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIItUe86vnf93GZy2ISN
 
 region = "us-east-1"
 instance_type = "t3.micro"
-subnet_id = "subnet-005bb1cceebc0371e"
 ssh_username = "ec2-user"
 
 ansible_playbook_path = "../ansible/main.yml"
