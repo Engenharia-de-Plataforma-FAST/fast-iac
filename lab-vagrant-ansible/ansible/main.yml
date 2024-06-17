@@ -1,0 +1,34 @@
+---
+- name: Start CI CD
+  hosts: all
+  become: true
+
+  collections:
+    - ansible.builtin
+    - community.docker
+
+  vars_files:
+    - vars/vars.yml
+  
+  tasks:
+    - name: config server
+      include_tasks: config-server.yml
+
+    - name: create docker compose to deploy stack
+      template:
+        src: "docker-compose.yml.j2"
+        dest: "/tmp/docker-compose.yml"
+
+    - name: deploy stack
+      docker_stack:
+        state: present
+        name: "{{ project_name }}"
+        compose:
+          - /tmp/docker-compose.yml
+
+    - name: remove temp files
+      file:
+        state: absent
+        path: "{{ item }}"
+      loop:
+        - "/tmp/docker-compose.yml"
