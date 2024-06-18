@@ -2,6 +2,7 @@ resource "google_compute_instance" "default" {
   provider = google
   name = "terraform-ansible-instance"
   machine_type = var.google_instance_type
+  allow_stopping_for_update = true
   zone = var.google_zone
   metadata = {
     ssh-keys = "ansible:${file(var.ssh_key_path_default_user)}"

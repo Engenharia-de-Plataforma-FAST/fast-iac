@@ -13,11 +13,11 @@ terraform {
     path = "terraform.tfstate"
   } 
   
-  # export GOOGLE_CLOUD_KEYFILE_JSON=/Users/crisapolinario/GitHub/fast2023/terraform/credential.json
+  # export GOOGLE_CLOUD_KEYFILE_JSON=/Users/crisapolinario/GitHub/Engenharia-de-Plataforma-FAST/fast-iac/lab-terraform-ansible/terraform/credential.json
   # export GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_CLOUD_KEYFILE_JSON
 
   # backend "gcs" {
-  #   bucket  = "bucket-statefile-fast2023"
+  #   bucket  = "bucket-statefile-fast2024"
   #   prefix  = "terraform/state"
   # }
 

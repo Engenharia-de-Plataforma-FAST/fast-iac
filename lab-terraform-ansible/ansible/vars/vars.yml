@@ -1,4 +1,4 @@
-project_name: "fast2023"
+project_name: "fast2024"
 project_domain: "cesar.school"
 
 jenkins_image: "jenkins/jenkins"

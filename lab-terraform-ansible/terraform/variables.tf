@@ -19,8 +19,8 @@ variable "google_project_number" {
 variable "google_instance_type" {
   description = "Google Instance Type"
   type        = string
-  # default     = "e2-standard-2"
-  default     = "e2-small"
+  default     = "e2-standard-2"
+  # default     = "e2-small"
 }
 
 variable "google_instance_image" {
