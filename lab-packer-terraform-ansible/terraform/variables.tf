@@ -1,39 +1,24 @@
-variable "google_region" {
-  description = "Google Region"
+variable "region" {
+  description = "AWS Region"
   type        = string
-  default     = "us-central1"
+  default     = "us-east-1"
 }
 
-variable "google_zone" {
-  description = "Google Zone"
+variable "instance_type" {
+  description = "Instance Type"
   type        = string
-  default     = "us-central1-a"
+  default     = "t2.micro"
 }
 
-variable "google_project_number" {
-  description = "Google Project Number"
+variable "instance_ami" {
+  description = "Instance AMI"
   type        = string
+  default     = "fast-20240619232356"
 }
 
-variable "google_instance_type" {
-  description = "Google Instance Type"
+variable "key_name" {
+  description = "Key Name"
   type        = string
-  default     = "e2-standard-2"
+  default     = "fast"
 }
 
-variable "google_instance_image" {
-  description = "Google Instance Image"
-  type        = string
-  default     = "centos-cloud/centos-stream-8"
-}
-
-variable "ssh_key_path_default_user" {
-  description = "Path SSH Key for Default User"
-  type        = string
-}
-
-variable "default_user" {
-  description = "Default User SSH"
-  type        = string
-  default     = "ansible"
-}

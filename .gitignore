@@ -163,7 +163,7 @@ credential.json
 */credential.json
 
 # Local .terraform directories
-*/.terraform/*
+**/.terraform*
 
 # .tfstate files
 *.tfstate

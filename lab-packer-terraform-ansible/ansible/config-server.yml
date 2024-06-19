@@ -1,29 +1,12 @@
 ---
-- name: install epel-release
-  dnf:
-    name: epel-release
+- name: Install dependencies
+  yum:
+    name: "{{ item }}"
     state: present
+  loop:
+    - docker
 
-- name: remove old packages
-  dnf:
-    name:
-      - docker
-      - docker-client
-      - docker-client-latest
-      - docker-common
-      - docker-latest
-      - docker-latest-logrotate
-      - docker-logrotate
-      - docker-engine
-    state: removed
-
-- name: install dependences by dnf
-  dnf:
-    name:
-      - yum-utils-4.0.21-23.el8
-    state: present
-
-- name: install dependences by pip
+- name: Install dependencies by pip
   pip:
     name: 
       - docker==5.0.3
@@ -32,32 +15,31 @@
       - requests==2.27.1
     state: present
 
-- name: verify repository
-  stat:
-    path: /etc/yum.repos.d/docker-ce.repo
-  register: repo_docker
-
-- name: adding docker-ce repository
-  shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-  when: not repo_docker.stat.exists
-
-- name: install docker-ce
-  yum:
-    name:
-      - docker-ce 
-      - docker-ce-cli 
-      - containerd.io 
-      - docker-buildx-plugin
-      - docker-compose-plugin
-    state: present
-    update_cache: yes
-
-- name: start docker
+- name: Enable Docker service
   service:
     name: docker
     state: started
-    enabled: true
+    enabled: yes
+
+- name: Install docker-compose
+  get_url:
+    url: https://github.com/docker/compose/releases/download/v2.27.1/docker-compose-Linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: 'u+x,g+x'
+
+- name: Create group docker
+  ansible.builtin.group:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - docker
+
+- name: Restart Docker
+  service:
+    name: docker
+    state: restarted
 
 - name: start docker swarm 
   docker_swarm:
     state: present
+
