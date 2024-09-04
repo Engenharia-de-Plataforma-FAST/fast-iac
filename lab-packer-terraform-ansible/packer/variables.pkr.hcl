@@ -26,7 +26,7 @@ variable "region" {
 
 variable "profile" {
   type = string
-  default = "fast"
+  default = "default"
 }
 
 variable "instance_type" {
