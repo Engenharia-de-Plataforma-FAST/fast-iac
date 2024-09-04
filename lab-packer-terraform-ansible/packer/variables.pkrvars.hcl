@@ -6,6 +6,8 @@ region = "us-east-1"
 instance_type = "t2.micro"
 ssh_username = "ec2-user"
 
+profile = "fast"
+
 ansible_playbook_path = "../ansible/main.yml"
 
 image_name = "fast"
