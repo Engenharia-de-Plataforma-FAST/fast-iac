@@ -24,6 +24,11 @@ variable "region" {
   default = "us-east-1"
 }
 
+variable "profile" {
+  type = string
+  default = "fast"
+}
+
 variable "instance_type" {
   type = string
   default = "t2.micro"
