@@ -7,6 +7,9 @@ data "aws_ami" "fast_ami" {
         values = [var.instance_ami]
     }
     owners = [data.aws_caller_identity.current.account_id]
+
+    # aws ec2 describe-images --owner amazon --image-ids ami-066784287e358dad1 --profile fast |jq
+    # owners = ["amazon"]
 }
 
 resource "tls_private_key" "fast_key" {
