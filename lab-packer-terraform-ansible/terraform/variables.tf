@@ -22,3 +22,8 @@ variable "key_name" {
   default     = "fast"
 }
 
+variable "aws_profile_name" {
+  description = "AWS Profile Name"
+  type        = string
+  default     = "fast"
+}

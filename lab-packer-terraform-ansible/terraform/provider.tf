@@ -1,6 +1,6 @@
 provider "aws" {
   region  = var.region
-  profile = "fast"
+  profile = var.aws_profile_name
 
  default_tags {
    tags = {
