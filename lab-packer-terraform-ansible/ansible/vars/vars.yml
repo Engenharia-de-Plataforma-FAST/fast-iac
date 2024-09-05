@@ -1,1 +1,3 @@
-project_name: "fast2024"
+nginx_version: "stable-alpine3.19"
+website_name: "CESAR"
+website_container_name: "website"

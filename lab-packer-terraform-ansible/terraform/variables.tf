@@ -13,7 +13,7 @@ variable "instance_type" {
 variable "instance_ami" {
   description = "Instance AMI"
   type        = string
-  default     = "fast-20240905003805"
+  default     = "fast-20240905033132"
 }
 
 variable "key_name" {
@@ -25,5 +25,5 @@ variable "key_name" {
 variable "aws_profile_name" {
   description = "AWS Profile Name"
   type        = string
-  default     = "fast"
+  default     = "batatinha"
 }

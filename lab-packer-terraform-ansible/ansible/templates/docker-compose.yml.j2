@@ -3,6 +3,8 @@ version: '3.8'
 services:
 
   web:
-    image: nginx:stable-alpine3.19
+    image: nginx:{{ nginx_version }}
+    container_name: {{ website_container_name }}
+    restart: always
     ports:
       - "80:80"
