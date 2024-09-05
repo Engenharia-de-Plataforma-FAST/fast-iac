@@ -16,7 +16,7 @@ source "amazon-ebs" "vm-instance" {
   ami_description = var.image_description
   instance_type   = var.instance_type
   region          = var.region
-  profile         = var.profile
+  profile         = var.aws_profile_name
   ssh_username    = var.ssh_username
   source_ami_filter {
     filters = {

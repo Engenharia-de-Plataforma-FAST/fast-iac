@@ -24,7 +24,7 @@ variable "region" {
   default = "us-east-1"
 }
 
-variable "profile" {
+variable "aws_profile_name" {
   type = string
   default = "default"
 }
