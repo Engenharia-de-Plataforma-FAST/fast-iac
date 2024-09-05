@@ -28,7 +28,7 @@
     mode: 'u+x,g+x'
 
 - name: Create group docker
-  ansible.builtin.group:
+  group:
     name: "{{ item }}"
     state: present
   loop:
