@@ -13,7 +13,7 @@ variable "instance_type" {
 variable "instance_ami" {
   description = "Instance AMI"
   type        = string
-  default     = "fast-20240619232356"
+  default     = "fast-20240905003805"
 }
 
 variable "key_name" {
