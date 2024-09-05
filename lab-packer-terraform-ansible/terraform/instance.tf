@@ -8,7 +8,8 @@ data "aws_ami" "fast_ami" {
     }
     owners = [data.aws_caller_identity.current.account_id]
 
-    # aws ec2 describe-images --owner amazon --image-ids ami-066784287e358dad1 --profile fast |jq
+    # Get the ID below from https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#AMICatalog:
+    # aws ec2 describe-images --owner amazon --image-ids ami-066784287e358dad1 --profile batatinha |jq
     # owners = ["amazon"]
 }
 
@@ -23,12 +24,13 @@ resource "aws_key_pair" "generated_key" {
 }
 
 resource "aws_instance" "fast" {
-  ami             = data.aws_ami.fast_ami.id
-  instance_type   = var.instance_type
-  key_name        = aws_key_pair.generated_key.key_name
-  security_groups = [aws_security_group.fast_sg.id]
-  private_ip      = "10.0.1.100"
-  subnet_id       = aws_subnet.public_subnet.id
+  ami                           = data.aws_ami.fast_ami.id
+  instance_type                 = var.instance_type
+  key_name                      = aws_key_pair.generated_key.key_name
+  security_groups               = [aws_security_group.fast_sg.id]
+  private_ip                    = "10.0.1.100"
+  subnet_id                     = aws_subnet.public_subnet.id
+  associate_public_ip_address   = true
 
   tags = {
     Name = "nginx"

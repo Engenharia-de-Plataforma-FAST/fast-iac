@@ -6,7 +6,7 @@ region = "us-east-1"
 instance_type = "t2.micro"
 ssh_username = "ec2-user"
 
-aws_profile_name = "fast"
+aws_profile_name = "batatinha"
 
 ansible_playbook_path = "../ansible/main.yml"
 

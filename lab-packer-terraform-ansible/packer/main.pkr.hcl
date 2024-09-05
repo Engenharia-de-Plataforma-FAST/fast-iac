@@ -20,7 +20,7 @@ source "amazon-ebs" "vm-instance" {
   ssh_username    = var.ssh_username
   source_ami_filter {
     filters = {
-      name                = "amzn2-ami-hvm*"
+      name                = "al2023-ami-2023.*x86_64"
       root-device-type    = "ebs"
       virtualization-type = "hvm"
     }
