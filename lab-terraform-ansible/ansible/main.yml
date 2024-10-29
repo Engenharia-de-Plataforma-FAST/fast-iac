@@ -26,9 +26,9 @@
         compose:
           - /tmp/docker-compose.yml
 
-    # - name: remove temp files
-    #   file:
-    #     state: absent
-    #     path: "{{ item }}"
-    #   loop:
-    #     - "/tmp/docker-compose.yml"
+    - name: remove temp files
+      file:
+        state: absent
+        path: "{{ item }}"
+      loop:
+        - "/tmp/docker-compose.yml"

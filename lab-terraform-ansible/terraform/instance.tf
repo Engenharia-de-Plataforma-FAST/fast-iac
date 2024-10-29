@@ -28,7 +28,7 @@ resource "google_compute_instance" "my_instance" {
   }
 
   provisioner "local-exec" {
-	  command = <<EOT
+    command = <<EOT
       sed -i '' 's/NAT_IP/${self.network_interface.0.access_config.0.nat_ip}/' ../ansible/inventory/main.yml
       export ANSIBLE_HOST_KEY_CHECKING=False
       sleep 200
