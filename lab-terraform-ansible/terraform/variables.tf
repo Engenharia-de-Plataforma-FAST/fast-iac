@@ -52,3 +52,9 @@ variable "storage_class" {
   type        = string
   default     = "standard"
 }
+
+variable "ssh_private_key_path_ansible_user" {
+  description = "Path SSH Key for Ansible User"
+  type        = string
+  default     = "~/.ssh/ecdsa_ansible"
+}

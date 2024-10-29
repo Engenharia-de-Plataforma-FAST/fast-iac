@@ -1,4 +1,4 @@
-resource "google_compute_instance" "default" {
+resource "google_compute_instance" "my_instance" {
   provider = google
   name = "terraform-ansible-instance"
   machine_type = var.google_instance_type
@@ -20,5 +20,20 @@ resource "google_compute_instance" "default" {
       image = var.google_instance_image
     }
   }
-  
+
+  connection {
+    host = self.network_interface.0.access_config.0.nat_ip
+    user = "ansible"
+    private_key = "${file(var.ssh_private_key_path_ansible_user)}"
+  }
+
+  provisioner "local-exec" {
+	  command = <<EOT
+      sed -i '' 's/NAT_IP/${self.network_interface.0.access_config.0.nat_ip}/' ../ansible/inventory/main.yml
+      export ANSIBLE_HOST_KEY_CHECKING=False
+      sleep 200
+      ansible-playbook -i ../ansible/inventory/main.yml ../ansible/main.yml
+    EOT
+  }
+
 }
