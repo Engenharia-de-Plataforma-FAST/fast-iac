@@ -4,36 +4,36 @@ packer {
       source  = "github.com/hashicorp/ansible"
       version = "~> 1.1"
     }
-    googlecompute = {
-      source  = "github.com/hashicorp/googlecompute"
-      version = "~> 1.1"
+    amazon = {
+      version = ">= 1.3.2"
+      source  = "github.com/hashicorp/amazon"
     }
   }
 }
 
-source "googlecompute" "vm-instance" {
-  account_file      = "credential.json"
-  image_description = var.project_image_description
-  image_family      = "centos-stream-8"
-  image_labels = {
-    source = "packer"
+source "amazon-ebs" "vm-instance" {
+  ami_name        = "${var.image_name}-${local.timestamp}"
+  ami_description = var.image_description
+  instance_type   = var.instance_type
+  region          = var.region
+  profile         = var.aws_profile_name
+  ssh_username    = var.ssh_username
+  source_ami_filter {
+    filters = {
+      name                = "al2023-ami-2023.*x86_64"
+      root-device-type    = "ebs"
+      virtualization-type = "hvm"
+    }
+    most_recent = true
+    owners      = ["amazon"]
   }
-  image_name   = var.project_image_name
-  machine_type = var.google_machine_type
-  metadata = {
-    ssh-keys = var.ssh_public_key
+  tags = {
+    Name = "AMI FAST"
   }
-  project_id              = var.google_project_id
-  source_image_family     = "centos-stream-8"
-  source_image_project_id = ["centos-cloud"]
-  ssh_private_key_file    = var.ssh_private_key_file
-  ssh_username            = "centos"
-  zone                    = var.google_zone
-  tags                    = ["allow-ssh"]
 }
 
 build {
-  sources = ["source.googlecompute.vm-instance"]
+  sources = ["source.amazon-ebs.vm-instance"]
 
   provisioner "ansible" {
     extra_arguments = ["--extra-vars", "ansible_ssh_common_args='-o StrictHostKeyChecking=no'"]
@@ -41,4 +41,8 @@ build {
     use_proxy       = false
   }
 
+}
+
+locals {
+  timestamp = regex_replace(timestamp(), "[- TZ:]", "")
 }

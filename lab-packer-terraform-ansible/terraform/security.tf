@@ -1,28 +1,43 @@
-resource "google_compute_firewall" "allow-http-services" {
-  name    = "allow-http-services"
-  network = google_compute_network.network.name
+resource "aws_security_group" "fast_sg" {
+    name = "fast-sg"
+    vpc_id = aws_vpc.fast_vpc.id
+    ingress {
+        cidr_blocks = [
+            "200.133.0.86/32"
+        ]
+        from_port = 22
+        to_port = 22
+        protocol = "tcp"
+    }
 
-  allow {
-    protocol = "tcp"
-    ports    = ["8080", "9000"]
+    ingress {
+        cidr_blocks = [
+            "0.0.0.0/0"
+        ]
+        from_port = 80
+        to_port = 80
+        protocol = "tcp"
+    }
+
+    ingress {
+        cidr_blocks = [
+            "0.0.0.0/0"
+        ]
+        from_port = -1
+        to_port = -1
+        protocol = "icmp"
+    }
+
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+  tags = {
+    Name = "fast-sg"
   }
-
-  source_ranges = ["0.0.0.0/0"]
-  target_tags = ["allow-http-services"]
-  direction   = "INGRESS"
 
 }
 
-resource "google_compute_firewall" "allow-ssh" {
-  name    = "fast-allow-ssh"
-  network = google_compute_network.network.name
-
-  allow {
-    protocol = "tcp"
-    ports    = ["22"]
-  }
-
-  source_ranges = ["0.0.0.0/0"]
-  target_tags = ["allow-ssh"]
-  direction   = "INGRESS"
-}

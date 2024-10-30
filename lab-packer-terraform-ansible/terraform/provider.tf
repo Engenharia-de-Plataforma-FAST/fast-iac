@@ -1,7 +1,12 @@
-provider "google" {
-  credentials = file("./credential.json")
+provider "aws" {
+  region  = var.region
+  profile = var.aws_profile_name
 
-  project = var.google_project_number
-  region  = var.google_region
-  zone    = var.google_zone
+ default_tags {
+   tags = {
+     Environment = "Dev"
+     Owner       = "Terraform"
+     Project     = "FAST"
+   }
+ }
 }
