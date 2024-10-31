@@ -20,6 +20,12 @@ jobs:
         working-directory: ./lab-terraform-ansible/terraform
 
     steps:
+    - name: Create SSH key file
+      run: 'echo "$SSH_KEY" > sshkey.pub'
+      shell: bash
+      env:
+        SSH_KEY: ${{secrets.ANSIBLE_SSH_PUB}}
+
     - name: Checkout
       uses: actions/checkout@v4
 
