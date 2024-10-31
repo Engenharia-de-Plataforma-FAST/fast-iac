@@ -24,6 +24,7 @@ jobs:
       env:
           SSH_KEY: ${{secrets.ANSIBLE_SSH_PUB}}
       shell: bash
+      working-directory: .
       run: |
           ls -la
           pwd
