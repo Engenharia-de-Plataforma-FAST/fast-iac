@@ -30,14 +30,17 @@ jobs:
       run: terraform init
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+        TF_VAR_ssh_key_path_default_user: ${{ secrets.ANSIBLE_SSH_PUB }}
 
     - name: Terraform Plan
       run: terraform plan -input=false
       env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+        TF_VAR_ssh_key_path_default_user: ${{ secrets.ANSIBLE_SSH_PUB }}
 
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
       env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+        TF_VAR_ssh_key_path_default_user: ${{ secrets.ANSIBLE_SSH_PUB }}
