@@ -20,6 +20,12 @@ jobs:
         working-directory: ./lab-terraform-ansible/terraform
 
     steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
     - name: Create SSH key file
       env:
           SSH_KEY: ${{secrets.ANSIBLE_SSH_PUB}}
@@ -28,16 +34,9 @@ jobs:
       run: |
           ls -la
           pwd
-      # run: |
-      #     touch sshkey.pub
-      #     echo "$SSH_KEY" > sshkey.pub
-      #     cat sshkey.pub
-
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
+          touch sshkey.pub
+          echo "$SSH_KEY" > sshkey.pub
+          cat sshkey.pub
 
     - name: Terraform Init
       run: terraform init
