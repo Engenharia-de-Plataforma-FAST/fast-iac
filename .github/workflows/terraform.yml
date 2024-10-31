@@ -35,8 +35,10 @@ jobs:
           ls -la
           pwd
           touch sshkey.pub
-          echo "$SSH_KEY" > sshkey.pub
-          cat sshkey.pub
+          echo "$SSH_KEY" > ./lab-terraform-ansible/terraform/sshkey.pub
+          ls -la
+          cat ./lab-terraform-ansible/terraform/sshkey.pub
+
 
     - name: Terraform Init
       run: terraform init
