@@ -25,9 +25,12 @@ jobs:
           SSH_KEY: ${{secrets.ANSIBLE_SSH_PUB}}
       shell: bash
       run: |
-          touch sshkey.pub
-          echo "$SSH_KEY" > sshkey.pub
-          cat sshkey.pub
+          ls -la
+          pwd
+      # run: |
+      #     touch sshkey.pub
+      #     echo "$SSH_KEY" > sshkey.pub
+      #     cat sshkey.pub
 
     - name: Checkout
       uses: actions/checkout@v4
