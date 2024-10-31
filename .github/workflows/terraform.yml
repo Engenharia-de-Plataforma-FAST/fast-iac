@@ -21,9 +21,12 @@ jobs:
 
     steps:
     - name: Create SSH key file
-      run: 'echo "$SSH_KEY" > sshkey.pub'
       env:
           SSH_KEY: ${{secrets.ANSIBLE_SSH_PUB}}
+      shell: bash
+      run: |
+          echo "$SSH_KEY" > sshkey.pub
+          cat sshkey.pub
 
     - name: Checkout
       uses: actions/checkout@v4
