@@ -26,35 +26,18 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
 
-    - name: Create SSH key file
-      env:
-          SSH_KEY: ${{secrets.ANSIBLE_SSH_PUB}}
-      shell: bash
-      working-directory: .
-      run: |
-          ls -la
-          pwd
-          touch sshkey.pub
-          echo "$SSH_KEY" > ./lab-terraform-ansible/terraform/sshkey.pub
-          ls -la
-          cat ./lab-terraform-ansible/terraform/sshkey.pub
-
-
     - name: Terraform Init
       run: terraform init
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
-        TF_VAR_ssh_key_path_default_user: ${{ secrets.ANSIBLE_SSH_PUB }}
 
     - name: Terraform Plan
       run: terraform plan -input=false
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
-        TF_VAR_ssh_key_path_default_user: ${{ secrets.ANSIBLE_SSH_PUB }}
 
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
-        TF_VAR_ssh_key_path_default_user: ${{ secrets.ANSIBLE_SSH_PUB }}
