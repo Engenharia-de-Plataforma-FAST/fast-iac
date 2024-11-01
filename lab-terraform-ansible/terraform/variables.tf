@@ -37,7 +37,7 @@ variable "google_network" {
 variable "ssh_key_path_default_user" {
   description = "Path SSH Key for Default User"
   type        = string
-  default     = "/tmp/sshkey.pub"
+  default     = "/home/runner/.ssh/ecdsa_ansible.pub"
 }
 
 variable "bucket_tfsatefile_name" {
@@ -55,5 +55,5 @@ variable "storage_class" {
 variable "ssh_private_key_path_ansible_user" {
   description = "Path SSH Key for Ansible User"
   type        = string
-  default     = "/tmp/sshkey"
+  default     = "/home/runner/.ssh/ecdsa_ansible"
 }
