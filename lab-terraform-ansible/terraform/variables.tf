@@ -10,11 +10,11 @@ variable "google_zone" {
   default     = "us-central1-a"
 }
 
-# variable "google_project_number" {
-#   description = "Google Project Number"
-#   type        = string
-#   default     = "420759343632"
-# }
+variable "google_project_number" {
+  description = "Google Project Number"
+  type        = string
+  default     = "420759343632"
+}
 
 variable "google_instance_type" {
   description = "Google Instance Type"
