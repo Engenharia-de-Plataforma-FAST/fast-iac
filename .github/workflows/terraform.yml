@@ -47,22 +47,22 @@ jobs:
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
 
-    - name: Terraform Apply
-      run: terraform apply -auto-approve -input=false
-      env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
-
-    # - name: Terraform Destroy
-    #   run: terraform destroy -auto-approve -input=false
+    # - name: Terraform Apply
+    #   run: terraform apply -auto-approve -input=false
     #   env:
     #     GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
 
-    - name: Run Playbook Ansible
-      shell: bash 
-      working-directory: ./lab-terraform-ansible/ansible/
-      run: |
-        pwd
-        ls -la
-        cat ./inventory/main.yml
+    - name: Terraform Destroy
+      run: terraform destroy -auto-approve -input=false
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+
+    # - name: Run Playbook Ansible
+    #   shell: bash 
+    #   working-directory: ./lab-terraform-ansible/ansible/
+    #   run: |
+    #     pwd
+    #     ls -la
+    #     cat ./inventory/main.yml
         
 #ansible-playbook -vvv --private-key /home/runner/.ssh/id_rsa -u ${{secrets.ANSIBLE_DEPLOY_USER}} -i hosts.yml setup-prod.yml
