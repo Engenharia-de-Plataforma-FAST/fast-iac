@@ -39,7 +39,7 @@ variable "ssh_key_path_default_user" {
   description = "Path SSH Key for Default User"
   type        = string
   # default     = "~/.ssh/ecdsa_ansible.pub"
-  default     = "./sshkey.pub"
+  default     = "/tmp/sshkey.pub"
 }
 
 variable "bucket_tfsatefile_name" {
