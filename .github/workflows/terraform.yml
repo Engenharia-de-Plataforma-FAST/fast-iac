@@ -1,4 +1,4 @@
-name: 'Terraform'
+name: Terraform
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   terraform:
-    name: 'Terraform'
+    name: Terraform
     runs-on: ubuntu-latest
     environment: production
 
@@ -22,6 +22,22 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+
+    - name: Setup SSH 
+      shell: bash
+      run: |
+        pwd
+        ls -la
+        touch /tmp/sshkey.pub
+        echo -e "${{secrets.ANSIBLE_SSH_PUB}}" > /tmp/sshkey.pub
+        cat /tmp/sshkey.pub
+      # run: |
+      #   eval `ssh-agent -s`
+      #   mkdir -p /home/runner/.ssh/
+      #   touch /home/runner/.ssh/id_rsa
+      #   echo -e "${{secrets.SSH_KEY}}" > /home/runner/.ssh/id_rsa
+      #   chmod 700 /home/runner/.ssh/id_rsa
+      #   ssh-keyscan -t rsa,dsa,ecdsa,ed25519 ${{secrets.SSH_HOST}} >> /home/runner/.ssh/known_hosts
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
@@ -36,8 +52,8 @@ jobs:
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
 
-    - name: Terraform Apply
-      # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -auto-approve -input=false
-      env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+    # - name: Terraform Apply
+    #   # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    #   run: terraform apply -auto-approve -input=false
+    #   env:
+    #     GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
