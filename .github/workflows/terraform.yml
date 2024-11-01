@@ -52,14 +52,14 @@ jobs:
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
 
-    - name: Terraform Destroy
-      run: terraform destroy -auto-approve -input=false
-      env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+    # - name: Terraform Destroy
+    #   run: terraform destroy -auto-approve -input=false
+    #   env:
+    #     GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
 
     - name: Run Playbook Ansible
       shell: bash 
-      working-directory: ../ansible/
+      working-directory: ./lab-terraform-ansible/ansible/
       run: |
         pwd
         ls -la
