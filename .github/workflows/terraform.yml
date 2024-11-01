@@ -26,8 +26,6 @@ jobs:
     - name: Setup SSH 
       shell: bash
       run: |
-        pwd
-        ls -la
         eval `ssh-agent -s`
         mkdir -p /home/runner/.ssh/
         touch /home/runner/.ssh/ecdsa_ansible /home/runner/.ssh/ecdsa_ansible.pub
@@ -35,14 +33,6 @@ jobs:
         echo -e "${{secrets.ANSIBLE_SSH_PUB}}" > /home/runner/.ssh/ecdsa_ansible
         chmod 700 /home/runner/.ssh/ecdsa_ansible
         chmod 644 /home/runner/.ssh/ecdsa_ansible.pub
-        ls -la /home/runner/.ssh/
-      # run: |
-      #   eval `ssh-agent -s`
-      #   mkdir -p /home/runner/.ssh/
-      #   touch /home/runner/.ssh/id_rsa
-      #   echo -e "${{secrets.SSH_KEY}}" > /home/runner/.ssh/id_rsa
-      #   chmod 700 /home/runner/.ssh/id_rsa
-      #   ssh-keyscan -t rsa,dsa,ecdsa,ed25519 ${{secrets.SSH_HOST}} >> /home/runner/.ssh/known_hosts
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
@@ -61,3 +51,18 @@ jobs:
       run: terraform apply -auto-approve -input=false
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+
+    - name: Terraform Destroy
+      run: terraform destroy -auto-approve -input=false
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+
+    - name: Run Playbook Ansible
+      shell: bash 
+      working-directory: ../ansible/
+      run: |
+        pwd
+        ls -la
+        cat ./inventory/main.yml
+        
+#ansible-playbook -vvv --private-key /home/runner/.ssh/id_rsa -u ${{secrets.ANSIBLE_DEPLOY_USER}} -i hosts.yml setup-prod.yml

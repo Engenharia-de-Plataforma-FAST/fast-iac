@@ -10,16 +10,17 @@ variable "google_zone" {
   default     = "us-central1-a"
 }
 
-variable "google_project_number" {
-  description = "Google Project Number"
-  type        = string
-  default     = "420759343632"
-}
+# variable "google_project_number" {
+#   description = "Google Project Number"
+#   type        = string
+#   default     = "420759343632"
+# }
 
 variable "google_instance_type" {
   description = "Google Instance Type"
   type        = string
-  default     = "e2-standard-2"
+  default     = "e2-micro"
+  # default     = "e2-standard-2"
 }
 
 variable "google_instance_image" {
@@ -40,6 +41,12 @@ variable "ssh_key_path_default_user" {
   default     = "/home/runner/.ssh/ecdsa_ansible.pub"
 }
 
+variable "ssh_private_key_path_ansible_user" {
+  description = "Path SSH Key for Ansible User"
+  type        = string
+  default     = "/home/runner/.ssh/ecdsa_ansible"
+}
+
 variable "bucket_tfsatefile_name" {
   description = "Name of the Bucket to save Statefile"
   type        = string
@@ -50,10 +57,4 @@ variable "storage_class" {
   description = "Name of the Bucket to save Statefile"
   type        = string
   default     = "standard"
-}
-
-variable "ssh_private_key_path_ansible_user" {
-  description = "Path SSH Key for Ansible User"
-  type        = string
-  default     = "/home/runner/.ssh/ecdsa_ansible"
 }

@@ -1,7 +1,7 @@
-webservers:
+googleinstances:
   hosts:
     terraform-instance:
       ansible_port: 22
       ansible_host: NAT_IP
       ansible_user: ansible
-      ansible_ssh_private_key_file: /Users/crisapolinario/.ssh/ecdsa_ansible
+      ansible_ssh_private_key_file: /home/runner/.ssh/ecdsa_ansible

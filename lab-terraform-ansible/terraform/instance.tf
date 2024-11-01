@@ -21,4 +21,23 @@ resource "google_compute_instance" "my_instance" {
     }
   }
 
+  # provisioner "local-exec" {
+  #   command = <<EOT
+  #     sed -i '' 's/NAT_IP/${self.network_interface.0.access_config.0.nat_ip}/' ../ansible/inventory/main.yml
+  #   EOT
+  # }
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    command = <<-EOT
+googleinstances: 
+  hosts:
+    terraform-instance:
+      ansible_port: 22
+      ansible_host: ${self.network_interface.0.access_config.0.nat_ip}
+      ansible_user: ansible
+      ansible_ssh_private_key_file: ${var.ssh_key_path_default_user}
+EOT
+
+  }
+
 }
