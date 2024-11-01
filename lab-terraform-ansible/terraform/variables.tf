@@ -20,7 +20,6 @@ variable "google_instance_type" {
   description = "Google Instance Type"
   type        = string
   default     = "e2-standard-2"
-  # default     = "e2-small"
 }
 
 variable "google_instance_image" {
@@ -38,7 +37,6 @@ variable "google_network" {
 variable "ssh_key_path_default_user" {
   description = "Path SSH Key for Default User"
   type        = string
-  # default     = "~/.ssh/ecdsa_ansible.pub"
   default     = "/tmp/sshkey.pub"
 }
 
@@ -57,5 +55,5 @@ variable "storage_class" {
 variable "ssh_private_key_path_ansible_user" {
   description = "Path SSH Key for Ansible User"
   type        = string
-  default     = "~/.ssh/ecdsa_ansible"
+  default     = "/tmp/sshkey"
 }

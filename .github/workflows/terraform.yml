@@ -28,9 +28,14 @@ jobs:
       run: |
         pwd
         ls -la
-        touch /tmp/sshkey.pub
-        echo -e "${{secrets.ANSIBLE_SSH_PUB}}" > /tmp/sshkey.pub
-        cat /tmp/sshkey.pub
+        eval `ssh-agent -s`
+        mkdir -p /home/runner/.ssh/
+        touch /home/runner/.ssh/ecdsa_ansible /home/runner/.ssh/ecdsa_ansible.pub
+        echo -e "${{secrets.ANSIBLE_SSH}}" > /home/runner/.ssh/ecdsa_ansible
+        echo -e "${{secrets.ANSIBLE_SSH_PUB}}" > /home/runner/.ssh/ecdsa_ansible
+        chmod 700 /home/runner/.ssh/ecdsa_ansible
+        chmod 644 /home/runner/.ssh/ecdsa_ansible.pub
+        ls -la /home/runner/.ssh/
       # run: |
       #   eval `ssh-agent -s`
       #   mkdir -p /home/runner/.ssh/
@@ -53,7 +58,6 @@ jobs:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
 
     - name: Terraform Apply
-      # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
