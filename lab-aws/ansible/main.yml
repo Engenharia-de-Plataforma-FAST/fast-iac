@@ -1,0 +1,52 @@
+---
+- name: Create a website at AWS
+  hosts: all
+  become: true
+
+  collections:
+    - ansible.builtin
+    - community.docker
+
+  vars_files:
+    - vars/vars.yml
+    
+  handlers:
+    - import_tasks: handlers/main.yml
+  
+  tasks:
+    - name: Config server
+      include_tasks: config-server.yml
+
+    - name: Create application directory
+      file:
+        path: "{{ app_install_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Create docker-compose.yml file to deploy the website
+      template:
+        src: "docker-compose.yml.j2"
+        dest: "{{ app_install_dir }}/docker-compose.yml"
+        mode: "{{ compose_file_mode }}"
+
+    - name: Generate the website index file
+      template:
+        src: "index.html.j2"
+        dest: "{{ app_install_dir }}/index.html"
+        mode: "{{ html_file_mode }}"
+
+    - name: Create and start the website (nginx) service
+      docker_compose_v2:
+        project_src: "{{ app_install_dir }}"
+        state: present
+        recreate: always
+      register: output
+
+    - name: Show results
+      debug:
+        msg: "Docker Compose deployment completed"
+
+    - name: Remove temporary docker-compose.yml file
+      file:
+        state: absent
+        path: "{{ app_install_dir }}/docker-compose.yml"

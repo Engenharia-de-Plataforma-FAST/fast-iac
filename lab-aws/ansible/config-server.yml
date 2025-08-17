@@ -1,0 +1,65 @@
+---
+- name: Install docker
+  package:
+    name: docker
+    state: latest
+
+- name: Install pip3
+  package: 
+    name: python3-pip 
+    state: latest 
+
+- name: Install dependencies by pip required by ansible's docker module
+  pip:
+    name:
+      - docker==7.1.0 # pip index versions docker
+    state: present
+    extra_args: --force-reinstall --no-deps
+
+- name: Enable Docker service on linux
+  service:
+    name: docker
+    state: started
+    enabled: yes
+  notify: restart docker
+
+- name: Check if Docker Compose exists
+  stat:
+    path: /usr/local/bin/docker-compose
+  register: docker_compose_stat
+
+- name: Download Docker Compose v2
+  get_url:
+    url: "{{ docker_compose_url }}"
+    dest: /usr/local/bin/docker-compose
+    mode: '0755'
+    owner: root
+    group: root
+  when: not docker_compose_stat.stat.exists
+
+- name: Create docker compose plugin directory
+  file:
+    path: /usr/local/lib/docker/cli-plugins
+    state: directory
+    mode: '0755'
+
+- name: Check if Docker Compose plugin symlink exists
+  stat:
+    path: /usr/local/lib/docker/cli-plugins/docker-compose
+  register: docker_compose_plugin_stat
+
+- name: Create symlink for compose plugin
+  file:
+    src: /usr/local/bin/docker-compose
+    dest: /usr/local/lib/docker/cli-plugins/docker-compose
+    state: link
+  when: not docker_compose_plugin_stat.stat.exists
+
+- name: Verify Docker Compose plugin is available
+  command: docker compose version
+  register: compose_version
+  changed_when: false
+
+- name: Show Docker Compose version
+  debug:
+    var: compose_version.stdout

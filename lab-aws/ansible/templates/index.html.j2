@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAST IaC Lab - {{ website_name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            margin: 0;
+            padding: 2rem;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .info h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .info p {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #f1c40f;
+        }
+
+        .tech-list {
+            margin-top: 2rem;
+        }
+
+        .tech-item {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            margin: 0.2rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>FAST IaC Lab</h1>
+        <p class="subtitle">Infrastructure as Code</p>
+        
+        <div class="info">
+            <h3>Website</h3>
+            <p>{{ website_name }}</p>
+        </div>
+        
+        <div class="info">
+            <h3>Host</h3>
+            <p id="hostname">Loading...</p>
+        </div>
+        
+        <div class="tech-list">
+            <span class="tech-item">Packer</span>
+            <span class="tech-item">Terraform</span>
+            <span class="tech-item">Ansible</span>
+            <span class="tech-item">Docker</span>
+            <span class="tech-item">AWS</span>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hostname = window.location.hostname || 'localhost';
+            document.getElementById('hostname').textContent = hostname;
+        });
+    </script>
+</body>
+</html>

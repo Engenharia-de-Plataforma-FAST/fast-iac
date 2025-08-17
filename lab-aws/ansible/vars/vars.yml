@@ -1,0 +1,18 @@
+# Docker and Application Configuration
+nginx_version: "stable-alpine3.19"
+website_name: "CESAR"
+website_container_name: "website"
+
+# Docker Compose Configuration
+docker_compose_version: "v2.39.2"
+docker_compose_url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-linux-x86_64"
+
+# File and Directory Configuration
+app_install_dir: "/opt/website"
+compose_file_mode: "0644"
+html_file_mode: "0644"
+
+# Container Configuration
+container_port: "80"
+host_port: "80"
+restart_policy: "unless-stopped"
