@@ -53,10 +53,10 @@ sudo apt update && sudo apt install terraform
 tfenv list-remote
 
 # Instalar versão específica
-tfenv install 1.6.0
+tfenv install 1.12.0
 
 # Trocar versões
-tfenv use 1.6.0
+tfenv use 1.12.0
 
 # Instalar versão do arquivo .terraform-version
 tfenv install
