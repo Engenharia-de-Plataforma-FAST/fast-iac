@@ -62,7 +62,7 @@ output "security_group_id" {
 
 output "ssh_connection_command" {
   description = "SSH connection command"
-  value       = "ssh -i ${path.module}/${var.key_name}.pem ec2-user@${aws_instance.web_server.public_ip}"
+  value       = "ssh -o IdentitiesOnly=yes -i ${path.module}/${var.key_name}.pem ec2-user@${aws_instance.web_server.public_ip}"
 }
 
 output "key_pair_name" {

@@ -124,17 +124,17 @@ output "alb_security_group_id" {
 
 output "ssh_bastion_command" {
   description = "SSH command to connect to bastion host"
-  value       = "ssh -i ${path.module}/${var.key_name}.pem ec2-user@${aws_instance.bastion_host.public_ip}"
+  value       = "ssh -o IdentitiesOnly=yes -i ${path.module}/${var.key_name}.pem ec2-user@${aws_instance.bastion_host.public_ip}"
 }
 
 output "ssh_web_server_1_command" {
   description = "SSH command to connect to web server 1 via bastion"
-  value       = "ssh -i ${path.module}/${var.key_name}.pem -o ProxyCommand='ssh -i ${path.module}/${var.key_name}.pem -W %h:%p ec2-user@${aws_instance.bastion_host.public_ip}' ec2-user@${aws_instance.web_server_1.private_ip}"
+  value       = "ssh -o IdentitiesOnly=yes -i ${path.module}/${var.key_name}.pem -o ProxyCommand='ssh -o IdentitiesOnly=yes -i ${path.module}/${var.key_name}.pem -W %h:%p ec2-user@${aws_instance.bastion_host.public_ip}' ec2-user@${aws_instance.web_server_1.private_ip}"
 }
 
 output "ssh_web_server_2_command" {
   description = "SSH command to connect to web server 2 via bastion"
-  value       = "ssh -i ${path.module}/${var.key_name}.pem -o ProxyCommand='ssh -i ${path.module}/${var.key_name}.pem -W %h:%p ec2-user@${aws_instance.bastion_host.public_ip}' ec2-user@${aws_instance.web_server_2.private_ip}"
+  value       = "ssh -o IdentitiesOnly=yes -i ${path.module}/${var.key_name}.pem -o ProxyCommand='ssh -o IdentitiesOnly=yes -i ${path.module}/${var.key_name}.pem -W %h:%p ec2-user@${aws_instance.bastion_host.public_ip}' ec2-user@${aws_instance.web_server_2.private_ip}"
 }
 
 output "ami_id" {

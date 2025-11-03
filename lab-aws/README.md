@@ -162,10 +162,10 @@ lab-aws/
 ├── README.md                    # Documentação principal (este arquivo)
 ├── terraform/
 │   ├── infra-01/                # Infraestrutura básica de EC2 única
+│   │   ├── bootstrap.sh         # Script de criação do bucket S3 para backend do Terraform
 │   │   ├── provision.sh         # Script de provisionamento de infraestrutura
 │   │   ├── destroy.sh           # Script de limpeza
 │   │   ├── clean.sh             # Script de limpeza de estado
-│   │   ├── bootstrap.sh         # Script de user data do EC2
 │   │   ├── main.tf              # Configuração principal do Terraform
 │   │   ├── variables.tf         # Definições de variáveis
 │   │   ├── outputs.tf           # Valores de saída
@@ -173,10 +173,10 @@ lab-aws/
 │   │   ├── security.tf          # Grupos de segurança e regras
 │   │   └── instance.tf          # Configuração da instância EC2
 │   └── infra-02/                # Infraestrutura enterprise multi-AZ
+│       ├── bootstrap.sh         # Script de criação do bucket S3 para backend do Terraform
 │       ├── provision.sh         # Script de provisionamento de infraestrutura
 │       ├── destroy.sh           # Script de limpeza
 │       ├── clean.sh             # Script de limpeza de estado
-│       ├── bootstrap.sh         # Script de user data do EC2
 │       ├── main.tf              # Configuração principal do Terraform
 │       ├── variables.tf         # Definições de variáveis
 │       ├── outputs.tf           # Valores de saída
@@ -208,7 +208,7 @@ lab-aws/
 
 **Objetivo:** Implantar infraestrutura básica da AWS usando Terraform
 
-**Duração:** 20-30 minutos  
+**Duração:** 20-30 minutos
 **Custo:** Gratuito (usando AWS Free Tier)
 
 ### O que Você Vai Construir
@@ -227,21 +227,54 @@ lab-aws/
 - 1 Grupo de Segurança
 - 1 Par de Chaves SSH
 
-### Instruções
+### Passo 1: Configurar Backend S3 (Primeira Execução)
+
+Antes de provisionar a infraestrutura, é necessário criar um bucket S3 para armazenar o estado do Terraform de forma remota e segura.
+
+**O que o script bootstrap faz:**
+- Cria bucket S3 privado com nome único
+- Habilita versionamento para recuperação de estado
+- Configura bloqueio de acesso público
+- Prepara backend configurado para o Terraform
+
 ```bash
 cd terraform/infra-01
+
+# Opção 1: Usar variáveis de ambiente (recomendado)
+BUCKET=fast-2025-iac-lab1 REGION=us-east-1 PROFILE=batatinha ./bootstrap.sh
+
+# Opção 2: Modo interativo (será solicitado a digitar os valores)
+./bootstrap.sh
+```
+
+**Nota:** Se o bucket já existir, o script informará e não fará alterações.
+
+### Passo 2: Provisionar Infraestrutura
+
+```bash
+# Ainda em terraform/infra-01
+
+# Opção 1: Usar as mesmas variáveis de ambiente (recomendado)
+PROFILE=batatinha BUCKET=fast-2025-iac-lab1 REGION=us-east-1 ./provision.sh
+
+# Opção 2: Se já exportou as variáveis, apenas execute
 ./provision.sh
 # Siga os prompts para confirmar a criação da infraestrutura
 ```
 
 ### Verificação
 ```bash
-# Obter IP da instância
-terraform output instance_public_ip
+# Verificar outputs da infraestrutura
+terraform output
 
-# Testar conectividade
-curl http://<INSTANCE_IP>
-# Deve retornar: 403 Forbidden (esperado - ainda não há servidor web)
+# Testar conectividade SSH (confirma que a instância está acessível)
+eval "$(terraform output -raw ssh_connection_command)"
+# Ou simplesmente copiar o comando exibido e executar manualmente:
+# terraform output ssh_connection_command
+
+# Testar porta HTTP (ainda não há servidor web, então falhará)
+curl "http://$(terraform output -raw instance_public_ip)"
+# Esperado: timeout ou "Failed to connect" - normal, pois não há servidor web ainda
 ```
 
 ### Limpeza
@@ -316,7 +349,7 @@ cd packer
 ```
 
 ### Saída
-- Nome da AMI customizada (ex: fast-web-server-20250119123456)
+- Nome da AMI customizada (ex: fast-20250119123456)
 - ID da AMI (ex: ami-0123456789abcdef0)
 - AMI será marcada com informações do projeto
 - Nota: Você usará o **nome** da AMI (não o ID) nos Labs 4 e 5
@@ -325,34 +358,40 @@ cd packer
 
 **Objetivo:** Implantar infraestrutura básica usando a AMI customizada criada no Lab 3
 
-**Duração:** 10-15 minutos  
+**Duração:** 10-15 minutos
 **Pré-requisitos:** Lab 3 completo (AMI customizada criada)
 
-### O que É Diferente
+### O que é diferente
 - Usa AMI customizada em vez do Amazon Linux padrão
 - Website inicia automaticamente na inicialização
 - Nenhuma configuração adicional necessária
 - Tempo de implantação mais rápido
 
 ### Instruções
+
+**Nota:** Se você já executou o Lab 1, o bucket S3 backend já está configurado. Pule direto para o comando de provisionamento.
+
 ```bash
 cd terraform/infra-01
 
-# Usar AMI customizada por nome (não ID)
-INSTANCE_AMI=fast-web-server-* AMI_OWNER=self ./provision.sh
+# Se esta for sua primeira vez (não fez Lab 1), execute:
+# BUCKET=fast-2025-iac-lab1 REGION=us-east-1 PROFILE=batatinha ./bootstrap.sh
+
+# Provisionar com AMI customizada por nome (não ID)
+PROFILE=batatinha BUCKET=fast-2025-iac-lab1 INSTANCE_AMI=fast-* AMI_OWNER=self ./provision.sh
 # O wildcard (*) corresponde ao timestamp, encontrando sua AMI mais recente
 
 # Ou especificar nome exato se você tiver múltiplas
-INSTANCE_AMI=fast-web-server-20250119123456 AMI_OWNER=self ./provision.sh
+PROFILE=batatinha BUCKET=fast-2025-iac-lab1 INSTANCE_AMI=fast-20250119123456 AMI_OWNER=self ./provision.sh
 ```
 
 ### Verificação
 ```bash
-# Obter IP da instância
-terraform output instance_public_ip
+# Verificar outputs da infraestrutura
+terraform output
 
 # Testar website (deve estar disponível imediatamente)
-curl http://<INSTANCE_IP>
+curl "http://$(terraform output -raw instance_public_ip)"
 # Deve retornar: Página HTML customizada sem configuração adicional
 ```
 
@@ -360,8 +399,8 @@ curl http://<INSTANCE_IP>
 
 **Objetivo:** Implantar infraestrutura de nível enterprise usando a AMI customizada com alta disponibilidade e segurança
 
-**Duração:** 25-35 minutos  
-**Custo:** ~$48/mês (destruir após o laboratório)  
+**Duração:** 25-35 minutos
+**Custo:** ~$48/mês (destruir após o laboratório)
 **Pré-requisitos:** Lab 3 completo (AMI customizada criada)
 
 ### O que Você Vai Construir
@@ -383,32 +422,81 @@ curl http://<INSTANCE_IP>
 - 3 Grupos de Segurança
 - Múltiplas tabelas de rotas
 
-### Instruções
+### Passo 1: Configurar Backend S3 (Primeira Execução)
+
+Antes de provisionar a infraestrutura enterprise, configure o backend S3 para gerenciar o estado do Terraform.
+
+**Nota:** Este lab usa um bucket S3 **diferente** do Lab 1 (fast-2025-iac-lab2 vs fast-2025-iac-lab1) para manter os estados isolados.
+
 ```bash
 cd terraform/infra-02
 
+# Opção 1: Usar variáveis de ambiente (recomendado)
+BUCKET=fast-2025-iac-lab2 REGION=us-east-1 PROFILE=batatinha ./bootstrap.sh
+
+# Opção 2: Modo interativo (será solicitado a digitar os valores)
+./bootstrap.sh
+```
+
+**Nota:** Se o bucket já existir, o script informará e não fará alterações.
+
+### Passo 2: Provisionar Infraestrutura
+
+```bash
+# Ainda em terraform/infra-02
+
 # Usar AMI customizada por nome (não ID)
-INSTANCE_AMI=fast-web-server-* AMI_OWNER=self ./provision.sh
+PROFILE=batatinha BUCKET=fast-2025-iac-lab2 INSTANCE_AMI=fast-* AMI_OWNER=self ./provision.sh
 # O wildcard (*) corresponde ao timestamp, encontrando sua AMI mais recente
 
 # Ou especificar nome exato se você tiver múltiplas
-INSTANCE_AMI=fast-web-server-20250119123456 AMI_OWNER=self ./provision.sh
+PROFILE=batatinha BUCKET=fast-2025-iac-lab2 INSTANCE_AMI=fast-20250119123456 AMI_OWNER=self ./provision.sh
 ```
 
 ### Padrões de Acesso
 ```bash
-# Obter URL do load balancer
-terraform output load_balancer_url
+# Verificar todos os outputs
+terraform output
 
 # Acessar website via load balancer
-curl http://<ALB_DNS_NAME>
+curl "$(terraform output -raw load_balancer_url)"
 
 # SSH para bastion host
-terraform output ssh_bastion_command
+eval "$(terraform output -raw ssh_bastion_command)"
 
-# SSH para servidores web via bastion
-terraform output ssh_web_server_1_command
-terraform output ssh_web_server_2_command
+# SSH para servidor web 1 via bastion (em outra sessão de terminal)
+eval "$(terraform output -raw ssh_web_server_1_command)"
+
+# SSH para servidor web 2 via bastion (em outra sessão de terminal)
+eval "$(terraform output -raw ssh_web_server_2_command)"
+```
+
+**Referência: Acesso SSH manual via bastion (ProxyCommand)**
+
+Se preferir construir o comando manualmente ou entender como funciona:
+
+```bash
+# Obter IPs necessários
+BASTION_IP=$(terraform output -raw bastion_public_ip)
+WEB1_IP=$(terraform output -raw web_server_1_private_ip)
+WEB2_IP=$(terraform output -raw web_server_2_private_ip)
+KEY_PATH=$(terraform output -raw private_key_path)
+
+# SSH para web server 1 usando bastion como proxy
+ssh -o IdentitiesOnly=yes -i "$KEY_PATH" \
+  -o ProxyCommand="ssh -o IdentitiesOnly=yes -i $KEY_PATH -W %h:%p ec2-user@$BASTION_IP" \
+  ec2-user@$WEB1_IP
+
+# SSH para web server 2 usando bastion como proxy
+ssh -o IdentitiesOnly=yes -i "$KEY_PATH" \
+  -o ProxyCommand="ssh -o IdentitiesOnly=yes -i $KEY_PATH -W %h:%p ec2-user@$BASTION_IP" \
+  ec2-user@$WEB2_IP
+
+# Explicação do ProxyCommand:
+# -W %h:%p = Encaminha stdin/stdout para host:porta de destino
+# %h = hostname do servidor web privado
+# %p = porta SSH (22)
+# O bastion atua como "ponte" para acessar servidores em subnets privadas
 ```
 
 ### Limpeza
@@ -424,6 +512,7 @@ Após completar todos os laboratórios, você entenderá:
 ### Terraform
 - Princípios de Infraestrutura como Código
 - Dependências de recursos e gerenciamento de estado
+- Backend remoto S3 para armazenamento de estado
 - Configuração de variáveis e saídas
 - Implantações multi-ambiente
 - Configuração do provider AWS
@@ -452,18 +541,33 @@ Após completar todos os laboratórios, você entenderá:
 
 Todos os scripts suportam customização por variáveis de ambiente:
 
+### Bootstrap (Configuração do Backend S3)
 ```bash
-# Configuração AWS com perfil
-AWS_PROFILE=batatinha REGION=us-east-1 ./provision.sh
+# Configurar backend S3 com variáveis de ambiente
+BUCKET=fast-2025-iac-lab1 REGION=us-east-1 PROFILE=batatinha ./bootstrap.sh
 
-# Marcação de Recursos
-AWS_PROFILE=batatinha ENVIRONMENT=prod OWNER="Minha Equipe" ./provision.sh
+# Ou definir como padrões de ambiente
+export BUCKET=fast-2025-iac-lab1
+export REGION=us-east-1
+export PROFILE=batatinha
+./bootstrap.sh
+```
+
+### Provision (Provisionamento de Infraestrutura)
+```bash
+# Configuração completa com perfil, bucket e região
+PROFILE=batatinha BUCKET=fast-2025-iac-lab1 REGION=us-east-1 ./provision.sh
+
+# Marcação de Recursos customizada
+PROFILE=batatinha BUCKET=fast-2025-iac-lab1 ENVIRONMENT=prod OWNER="Minha Equipe" ./provision.sh
 
 # Uso de AMI Customizada (usar padrão de nome, não ID da AMI)
-AWS_PROFILE=batatinha INSTANCE_AMI=fast-web-server-* AMI_OWNER=self ./provision.sh
+PROFILE=batatinha BUCKET=fast-2025-iac-lab1 INSTANCE_AMI=fast-* AMI_OWNER=self ./provision.sh
 
-# Ou exportar perfil para todos os comandos
-export AWS_PROFILE=batatinha
+# Ou exportar variáveis para todos os comandos
+export PROFILE=batatinha
+export BUCKET=fast-2025-iac-lab1
+export REGION=us-east-1
 ./provision.sh
 ```
 
@@ -471,10 +575,26 @@ export AWS_PROFILE=batatinha
 
 ### Problemas Comuns
 
+**Problemas com Bootstrap S3**
+```bash
+# Verificar se o bucket foi criado
+aws s3 ls --profile batatinha | grep fast-2025-iac
+
+# Verificar configuração do bucket
+aws s3api get-bucket-versioning --bucket fast-2025-iac-lab1 --profile batatinha
+
+# Se precisar recriar o bucket, primeiro remova o existente
+aws s3 rb s3://fast-2025-iac-lab1 --force --profile batatinha
+./bootstrap.sh
+```
+
 **Conflitos de Estado do Terraform**
 ```bash
 # Se o estado estiver bloqueado
 terraform force-unlock <LOCK_ID>
+
+# Verificar estado remoto
+terraform state list
 ```
 
 **Problemas de Conexão SSH**
