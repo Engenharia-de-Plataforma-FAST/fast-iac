@@ -505,6 +505,194 @@ ssh -o IdentitiesOnly=yes -i "$KEY_PATH" \
 # Importante: Destruir para evitar cobranças do NAT Gateway e Load Balancer
 ```
 
+## Lab 6: Arquitetura Modular com Terraform
+
+**Objetivo:** Refatorar a infraestrutura enterprise usando módulos do Terraform para melhor reutilização, manutenibilidade e organização
+
+**Duração:** 30-40 minutos
+**Custo:** ~$48/mês (destruir após o laboratório)
+**Pré-requisitos:** Conhecimento dos Labs anteriores
+
+### O que é diferente
+
+Este lab demonstra as **melhores práticas de organização** usando módulos do Terraform:
+
+- **Módulos reutilizáveis**: Cada componente (networking, security, compute, load-balancer) é um módulo independente
+- **Separação de responsabilidades**: Código organizado por domínio funcional
+- **Fácil manutenção**: Mudanças isoladas em módulos específicos
+- **Reutilização**: Módulos podem ser usados em múltiplos ambientes
+- **Composição**: main.tf apenas "conecta" os módulos
+
+### Estrutura Modular
+
+```
+terraform/infra-03/
+├── main.tf                    # Orquestra os módulos
+├── variables.tf               # Variáveis da raiz
+├── outputs.tf                 # Outputs da raiz
+├── bootstrap.sh              # Script de configuração do backend S3
+├── provision.sh              # Script de provisionamento
+├── destroy.sh                # Script de limpeza
+└── modules/
+    ├── networking/           # Módulo: VPC, Subnets, Gateways
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   └── outputs.tf
+    ├── security/             # Módulo: Security Groups
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   └── outputs.tf
+    ├── compute/              # Módulo: EC2 Instances
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   └── outputs.tf
+    └── load-balancer/        # Módulo: ALB, Target Groups
+        ├── main.tf
+        ├── variables.tf
+        └── outputs.tf
+```
+
+### Vantagens da Abordagem Modular
+
+**1. Reutilização**
+- O mesmo módulo pode ser usado em múltiplos ambientes (dev, staging, prod)
+- Exemplo: O módulo `networking` pode criar VPCs diferentes para cada ambiente
+- Basta mudar as variáveis passadas para o módulo
+
+**2. Testabilidade**
+- Cada módulo pode ser testado independentemente
+- Mudanças isoladas não afetam outros componentes
+- Facilita identificar problemas específicos
+
+**3. Manutenibilidade**
+- Código menor e mais focado por arquivo (50-100 linhas vs 200+)
+- Fácil localizar e modificar componentes específicos
+- Separação clara de responsabilidades
+
+**4. Composição**
+- Módulos se comunicam através de outputs/inputs
+- Dependências explícitas e claras entre componentes
+- Fácil adicionar ou remover funcionalidades (ex: desabilitar bastion)
+
+### Passo 1: Configurar Backend S3
+
+```bash
+cd terraform/infra-03
+
+# Opção 1: Usar variáveis de ambiente (recomendado)
+BUCKET=fast-2025-iac-lab3 REGION=us-east-1 PROFILE=batatinha ./bootstrap.sh
+
+# Opção 2: Modo interativo
+./bootstrap.sh
+```
+
+**Nota:** Este lab usa um bucket S3 **diferente** (fast-2025-iac-lab3) para manter os estados isolados.
+
+### Passo 2: Provisionar Infraestrutura
+
+```bash
+# Ainda em terraform/infra-03
+
+# Usar AMI customizada por nome (não ID)
+PROFILE=batatinha BUCKET=fast-2025-iac-lab3 INSTANCE_AMI=fast-* AMI_OWNER=self ./provision.sh
+
+# Ou especificar nome exato se você tiver múltiplas
+PROFILE=batatinha BUCKET=fast-2025-iac-lab3 INSTANCE_AMI=fast-20250119123456 AMI_OWNER=self ./provision.sh
+```
+
+### Recursos Criados
+
+Idênticos ao Lab 5, mas organizados em módulos:
+- 1 VPC (módulo networking)
+- 4 Subnets - 2 públicas, 2 privadas (módulo networking)
+- 1 Internet Gateway + 1 NAT Gateway (módulo networking)
+- 3 Security Groups (módulo security)
+- 3 Instâncias EC2 - 2 web servers + 1 bastion (módulo compute)
+- 1 Application Load Balancer (módulo load-balancer)
+
+### Padrões de Acesso
+
+```bash
+# Verificar todos os outputs
+terraform output
+
+# Acessar website via load balancer
+curl "$(terraform output -raw load_balancer_url)"
+
+# SSH para bastion host
+eval "$(terraform output -raw ssh_bastion_command)"
+
+# SSH para servidores web via bastion (ver comandos disponíveis)
+terraform output ssh_web_servers_commands
+
+# Conectar ao servidor web 1 (copie o primeiro comando da lista acima e execute)
+# Conectar ao servidor web 2 (copie o segundo comando da lista acima e execute)
+```
+
+**Referência: Acesso SSH manual via bastion (ProxyCommand)**
+
+Se preferir construir o comando manualmente ou entender como funciona:
+
+```bash
+# Obter IPs necessários
+BASTION_IP=$(terraform output -raw bastion_public_ip)
+WEB_IPS=($(terraform output -json web_private_ips | jq -r '.[]'))
+KEY_PATH=$(terraform output -raw private_key_path)
+
+# SSH para web server 1 usando bastion como proxy
+ssh -o IdentitiesOnly=yes -i "$KEY_PATH" \
+  -o ProxyCommand="ssh -o IdentitiesOnly=yes -i $KEY_PATH -W %h:%p ec2-user@$BASTION_IP" \
+  ec2-user@${WEB_IPS[0]}
+
+# SSH para web server 2 usando bastion como proxy
+ssh -o IdentitiesOnly=yes -i "$KEY_PATH" \
+  -o ProxyCommand="ssh -o IdentitiesOnly=yes -i $KEY_PATH -W %h:%p ec2-user@$BASTION_IP" \
+  ec2-user@${WEB_IPS[1]}
+
+# Explicação do ProxyCommand:
+# -W %h:%p = Encaminha stdin/stdout para host:porta de destino
+# %h = hostname do servidor web privado
+# %p = porta SSH (22)
+# O bastion atua como "ponte" para acessar servidores em subnets privadas
+```
+
+### Exemplo: Customizando Módulos
+
+**Mudar número de web servers:**
+```bash
+PROFILE=batatinha BUCKET=fast-2025-iac-lab3 INSTANCE_AMI=fast-* AMI_OWNER=self WEB_SERVER_COUNT=3 ./provision.sh
+```
+
+**Desabilitar NAT Gateway (economia de custos):**
+```bash
+PROFILE=batatinha BUCKET=fast-2025-iac-lab3 INSTANCE_AMI=fast-* AMI_OWNER=self ENABLE_NAT_GATEWAY=false ./provision.sh
+# Nota: Sem NAT Gateway, os web servers não terão acesso à internet
+```
+
+**Criar sem bastion host:**
+```bash
+PROFILE=batatinha BUCKET=fast-2025-iac-lab3 INSTANCE_AMI=fast-* AMI_OWNER=self CREATE_BASTION=false ./provision.sh
+# Nota: Sem bastion, você não conseguirá SSH nos web servers privados
+```
+
+### Comparação: Lab 5 vs Lab 6
+
+| Aspecto | Lab 5 (Monolítico) | Lab 6 (Modular) |
+|---------|-------------------|-----------------|
+| **Arquivos** | 7 arquivos no root | 4 root + 12 em módulos |
+| **Linhas por arquivo** | ~200 linhas | ~50-100 linhas |
+| **Reutilização** | Difícil | Fácil (módulos isolados) |
+| **Manutenção** | Arquivos grandes | Arquivos pequenos e focados |
+| **Testes** | Tudo junto | Módulos individuais |
+| **Composição** | Hardcoded | Flexível via módulos |
+
+### Limpeza
+
+```bash
+./destroy.sh
+# Importante: Destruir para evitar cobranças do NAT Gateway e Load Balancer
+```
+
 ## Principais Resultados de Aprendizado
 
 Após completar todos os laboratórios, você entenderá:
@@ -514,6 +702,8 @@ Após completar todos os laboratórios, você entenderá:
 - Dependências de recursos e gerenciamento de estado
 - Backend remoto S3 para armazenamento de estado
 - Configuração de variáveis e saídas
+- **Módulos reutilizáveis e composição**
+- **Organização de código em arquitetura modular**
 - Implantações multi-ambiente
 - Configuração do provider AWS
 
