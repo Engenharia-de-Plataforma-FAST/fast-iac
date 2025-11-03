@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IaC e Automação - Módulo 3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        .slide {
+            min-height: 100vh;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+            position: relative;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 100px;
+            height: 100px;
+            background: url('images/logo-cesar.png') no-repeat center;
+            background-size: contain;
+            opacity: 0.8;
+        }
+
+        .cover {
+            background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+            text-align: center;
+        }
+
+        .cover h1 {
+            font-size: 4rem;
+            color: #ff6b35;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .cover .subtitle {
+            font-size: 2rem;
+            color: #e94560;
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            background: linear-gradient(135deg, #e94560 0%, #ff6b35 100%);
+        }
+
+        .section-title::before {
+            background: url('images/logo-cesar-white.png') no-repeat center !important;
+            background-size: contain !important;
+        }
+
+        .section-title h1 {
+            font-size: 5rem;
+            color: #fff;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 2.8rem;
+            color: #ff6b35;
+            margin-bottom: 2rem;
+            border-left: 6px solid #e94560;
+            padding-left: 1.5rem;
+        }
+
+        h3 {
+            font-size: 2rem;
+            color: #ff6b35;
+            margin-bottom: 1.5rem;
+        }
+
+        .content {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        ul {
+            list-style: none;
+            font-size: 1.35rem;
+            line-height: 1.9;
+            margin-left: 2rem;
+        }
+
+        ul li {
+            padding-left: 2rem;
+            position: relative;
+            margin-bottom: 0.9rem;
+        }
+
+        ul li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #ff6b35;
+            font-size: 1.5rem;
+        }
+
+        .image-placeholder {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px dashed #ff6b35;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            color: #ff6b35;
+            font-style: italic;
+            margin: 2rem 0;
+            font-size: 1.1rem;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .highlight {
+            background: linear-gradient(90deg, rgba(255, 107, 53, 0.2) 0%, transparent 100%);
+            border-left: 4px solid #ff6b35;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            font-size: 1.3rem;
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.4);
+            color: #4ecca3;
+            padding: 0.3rem 0.6rem;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        strong {
+            color: #ff6b35;
+            font-weight: 600;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .nav-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #666;
+            font-size: 0.9rem;
+            z-index: 1000;
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            color: #666;
+            font-size: 0.9rem;
+            z-index: 1000;
+        }
+
+        .stat-box {
+            background: rgba(255, 107, 53, 0.15);
+            border: 2px solid #ff6b35;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .stat-box .number {
+            font-size: 3rem;
+            color: #ff6b35;
+            font-weight: bold;
+        }
+
+        .stat-box .label {
+            font-size: 1.2rem;
+            color: #e0e0e0;
+        }
+
+        .source {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .source a {
+            color: #ff6b35;
+            text-decoration: none;
+            border-bottom: 1px dotted #ff6b35;
+        }
+
+        .source a:hover {
+            color: #e94560;
+            border-bottom-color: #e94560;
+        }
+
+        @media (max-width: 768px) {
+            .slide { padding: 2rem 1rem; }
+            .cover h1 { font-size: 2.5rem; }
+            h2 { font-size: 2rem; }
+            ul { font-size: 1.1rem; }
+            .two-column { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Slide 1: Capa -->
+    <div class="slide cover active">
+        <h1>Engenharia de Plataforma</h1>
+        <div class="subtitle" style="font-size: 1.5rem; margin-top: 2rem;">FAST | Cesar School</div>
+    </div>
+
+    <!-- Slide 2: Título -->
+    <div class="slide cover">
+        <h1>IaC e Automação</h1>
+        <div class="subtitle">Módulo 3 - Aulas 8 e 9</div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 3: Rodrigo -->
+    <div class="slide">
+        <div class="content">
+            <h2>Olá! Eu sou Rodrigo Brayner</h2>
+            <div style="display: flex; align-items: center; gap: 3rem;">
+                <div style="flex: 1;">
+                    <p style="font-size: 1.3rem; margin-bottom: 2rem;">Mais de 20 anos atuando em TI:</p>
+                    <ul>
+                        <li><strong>Formação:</strong> Eng. Computação (UPE) + Mestrado em Ciência da Computação (UFPE)</li>
+                        <li><strong>Network Engineering:</strong> Infraestrutura de rede</li>
+                        <li><strong>SysAdmin:</strong> Administração de sistemas</li>
+                        <li><strong>QA</strong></li>
+                        <li><strong>DevOps/SRE/Platform Engineering:</strong> Automação e confiabilidade</li>
+                    </ul>
+                </div>
+                <div style="text-align: center;">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://www.linkedin.com/in/rodrigo-brayner/" alt="LinkedIn QR Code" style="width: 200px; height: 200px; border: 4px solid #ff6b35; border-radius: 10px; padding: 10px; background: white;">
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #ff6b35;"><strong>LinkedIn</strong></p>
+                </div>
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 4: Francisco -->
+    <div class="slide">
+        <div class="content">
+            <h2>Olá! Eu sou Francisco Filho</h2>
+            <ul>
+                <li><strong>Graduando</strong> em Ciência da Computação (Cesar School)</li>
+                <li><strong>Estagiário</strong> em Engenharia de Plataforma no CESAR</li>
+                <li><strong>Pesquisador auxiliar</strong> em IA Ubíqua</li>
+                <li><strong>Experiência</strong> em automação de infraestrutura e ferramentas DevOps modernas</li>
+            </ul>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 5: Agenda -->
+    <div class="slide">
+        <div class="content">
+            <h2>O que veremos hoje?</h2>
+            <ul style="font-size: 1.6rem; line-height: 2.5;">
+                <li><strong>Conteúdo 01:</strong> Automação e seus benefícios</li>
+                <li><strong>Conteúdo 02:</strong> Infraestrutura como Código (IaC)</li>
+                <li><strong>Conteúdo 03:</strong> Ferramentas (Git, Terraform, Ansible, Packer)</li>
+                <li><strong>Conteúdo 04:</strong> Prática hands-on na AWS</li>
+            </ul>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 6: Seção Automação -->
+    <div class="slide section-title">
+        <h1>Conteúdo 01<br><br>Automação</h1>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 7: O que é Automação -->
+    <div class="slide">
+        <div class="content">
+            <h2>Benefícios da Automação</h2>
+            <h3>O que é Automação?</h3>
+            <div class="highlight">
+                Uso de tecnologia para realizar tarefas com <strong>mínima ou nenhuma intervenção humana</strong>
+            </div>
+            <ul>
+                <li><strong>Velocidade:</strong> Entregas mais rápidas</li>
+                <li><strong>Escalabilidade:</strong> Cresce/diminui sob demanda</li>
+                <li><strong>Economia:</strong> Reduz custos operacionais</li>
+                <li><strong>Confiabilidade:</strong> Menos erros humanos</li>
+                <li><strong>Foco:</strong> Time trabalha em tarefas de maior valor</li>
+            </ul>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 8: Impacto da Automação -->
+    <div class="slide">
+        <div class="content">
+            <h2>Benefícios da Automação</h2>
+            <h3>Impacto Real</h3>
+            <ul>
+                <li><strong>Ciclos de deployment</strong> mais rápidos</li>
+                <li><strong>Redução de erros</strong> em produção</li>
+                <li><strong>Melhoria na colaboração</strong> entre times</li>
+                <li><strong>Estabilidade do sistema</strong> aumentada</li>
+                <li><strong>Time-to-market</strong> reduzido significativamente</li>
+                <li><strong>Maior previsibilidade</strong> nas entregas</li>
+                <li><strong>Facilita escalabilidade</strong> da infraestrutura</li>
+            </ul>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 9: Provisionamento -->
+    <div class="slide">
+        <div class="content">
+            <h2>Benefícios da Automação</h2>
+            <h3>Provisionamento Automatizado</h3>
+            <p><strong>Evolução:</strong> De hardware físico para ativos virtualizados</p>
+            <ul>
+                <li><strong>Bare-metal:</strong> Servidores físicos em datacenter</li>
+                <li><strong>Virtualização:</strong> VMs, containers</li>
+                <li><strong>Cloud:</strong> Infraestrutura sob demanda</li>
+                <li><strong>IaC:</strong> Definido por código versionável</li>
+            </ul>
+            <div class="highlight">
+                <strong>Benefício:</strong> Provisionar ambiente completo em minutos ao invés de dias
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 10: Gerenciamento de Configuração -->
+    <div class="slide">
+        <div class="content">
+            <h2>Benefícios da Automação</h2>
+            <h3>Gerenciamento de Configuração</h3>
+            <p><strong>Desafio:</strong> Cada aplicação tem requisitos únicos</p>
+            <ul>
+                <li>Pacotes de software específicos</li>
+                <li>Configurações de portas e rede</li>
+                <li>Usuários e permissões</li>
+                <li>Variáveis de ambiente</li>
+                <li>Arquivos de configuração</li>
+            </ul>
+            <div class="highlight">
+                <strong>Solução:</strong> Ferramentas de configuration management (Ansible, Chef, Puppet)
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 11: Orquestração -->
+    <div class="slide">
+        <div class="content">
+            <h2>Benefícios da Automação</h2>
+            <h3>O que é Orquestração?</h3>
+            <div class="highlight">
+                <strong>Orquestração</strong> é a coordenação automatizada de múltiplas tarefas e sistemas para executar um processo complexo de forma integrada
+            </div>
+            <div class="two-column">
+                <div>
+                    <p><strong>Diferença entre Automação e Orquestração:</strong></p>
+                    <ul>
+                        <li><strong>Automação:</strong> Uma tarefa executada sozinha<br>
+                        <em>Ex: Script que reinicia um servidor</em></li>
+                        <li><strong>Orquestração:</strong> Várias tarefas coordenadas<br>
+                        <em>Ex: Deploy completo (build → test → deploy → health check → rollback se falhar)</em></li>
+                    </ul>
+                </div>
+                <div>
+                    <p><strong>Por que orquestração?</strong></p>
+                    <ul>
+                        <li><strong>Coordenação:</strong> Vários componentes trabalhando juntos</li>
+                        <li><strong>Dependências:</strong> Ordem de execução e condições</li>
+                        <li><strong>Múltiplos ambientes:</strong> Cloud híbrida e multi-cloud</li>
+                        <li><strong>Monitoramento:</strong> Visibilidade end-to-end</li>
+                        <li><strong>Tratamento de erros:</strong> Rollback e retry automático</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 11b: Exemplos de Orquestração -->
+    <div class="slide">
+        <div class="content">
+            <h2>Benefícios da Automação</h2>
+            <h3>Exemplos de Orquestração</h3>
+            <div class="two-column">
+                <div>
+                    <p><strong>🐳 Kubernetes:</strong></p>
+                    <ul>
+                        <li>Orquestração de containers</li>
+                        <li>Auto-scaling baseado em demanda</li>
+                        <li>Self-healing (reinicia containers falhos)</li>
+                        <li>Load balancing automático</li>
+                        <li>Rolling updates sem downtime</li>
+                    </ul>
+                    <p><strong>🔄 Apache Airflow:</strong></p>
+                    <ul>
+                        <li>Orquestração de pipelines de dados</li>
+                        <li>Workflows com dependências (DAGs)</li>
+                        <li>Agendamento e retry automático</li>
+                    </ul>
+                </div>
+                <div>
+                    <p><strong>⚡ AWS Step Functions:</strong></p>
+                    <ul>
+                        <li>Orquestração de serviços AWS</li>
+                        <li>Workflows serverless</li>
+                        <li>Tratamento de erros e compensações</li>
+                    </ul>
+                    <p><strong>🎯 Terraform + Ansible:</strong></p>
+                    <ul>
+                        <li>Orquestração de infraestrutura completa</li>
+                        <li>Terraform cria recursos</li>
+                        <li>Ansible configura em ordem</li>
+                        <li>Pipeline coordenado end-to-end</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 12: Implantação de Aplicações -->
+    <div class="slide">
+        <div class="content">
+            <h2>Benefícios da Automação</h2>
+            <h3>Implantação de Aplicações (CI/CD)</h3>
+            <p><strong>Pipeline automatizado:</strong></p>
+            <ul>
+                <li><strong>Build:</strong> Compilação automática</li>
+                <li><strong>Test:</strong> Testes unitários, integração, E2E</li>
+                <li><strong>Security:</strong> Scan de vulnerabilidades</li>
+                <li><strong>Deploy:</strong> Entrega em produção</li>
+            </ul>
+            <div class="highlight">
+                <strong>Resultado:</strong> De deploys manuais e demorados para deployments múltiplos por dia
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 13: Segurança -->
+    <div class="slide">
+        <div class="content">
+            <h2>Benefícios da Automação</h2>
+            <h3>Segurança e Conformidade (DevSecOps)</h3>
+            <p><strong>Shift-Left Security:</strong> Segurança desde o início</p>
+            <ul>
+                <li><strong>Políticas como código:</strong> Automação de compliance</li>
+                <li><strong>Scan automatizado:</strong> Vulnerabilidades detectadas cedo</li>
+                <li><strong>Auditoria facilitada:</strong> Histórico completo de mudanças</li>
+                <li><strong>Consistência:</strong> Mesmas regras em todos ambientes</li>
+            </ul>
+            <div class="highlight">
+                Prevenir é mais barato que remediar
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 14: Seção IaC -->
+    <div class="slide section-title">
+        <h1>Conteúdo 02<br><br>Infraestrutura<br>como Código</h1>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 15: O que é IaC -->
+    <div class="slide">
+        <div class="content">
+            <h2>Infraestrutura como Código</h2>
+            <h3>O que é IaC?</h3>
+            <div class="highlight">
+                Gerenciar e provisionar infraestrutura através de <strong>arquivos de código</strong> ao invés de configuração manual
+            </div>
+            <ul>
+                <li><strong>Declarativo:</strong> Descreve o estado desejado</li>
+                <li><strong>Versionável:</strong> Histórico no Git como código normal</li>
+                <li><strong>Reproduzível:</strong> Mesmo resultado sempre</li>
+                <li><strong>Modular:</strong> Componentes reutilizáveis</li>
+                <li><strong>Testável:</strong> Validação antes de aplicar</li>
+            </ul>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 16: Por que IaC -->
+    <div class="slide">
+        <div class="content">
+            <h2>Infraestrutura como Código</h2>
+            <h3>Por que IaC é importante?</h3>
+            <p><strong>Problemas sem IaC:</strong></p>
+            <ul>
+                <li><strong>Configuration Drift:</strong> Ambientes ficam diferentes ao longo do tempo</li>
+                <li><strong>Snowflake Servers:</strong> Servidores únicos e impossíveis de replicar</li>
+                <li><strong>Documentação desatualizada:</strong> Não reflete realidade</li>
+                <li><strong>Escalabilidade limitada:</strong> Processos manuais não escalam</li>
+                <li><strong>Recuperação lenta:</strong> Disaster recovery demorado</li>
+            </ul>
+            <div class="highlight">
+                <strong>IaC resolve:</strong> Consistência + Rastreabilidade + Automação + Documentação viva
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 17: Benefícios IaC -->
+    <div class="slide">
+        <div class="content">
+            <h2>Infraestrutura como Código</h2>
+            <h3>Benefícios Principais</h3>
+            <ul>
+                <li><strong>Velocidade:</strong> Deploy de infraestrutura em minutos</li>
+                <li><strong>Redução de custos:</strong> Menos horas manuais, menos erros</li>
+                <li><strong>Segurança:</strong> Políticas aplicadas consistentemente</li>
+                <li><strong>Idempotência:</strong> Múltiplas execuções = mesmo resultado</li>
+                <li><strong>Disaster Recovery:</strong> Recriação rápida de ambientes</li>
+            </ul>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 18: Mutável vs Imutável -->
+    <div class="slide">
+        <div class="content">
+            <h2>Infraestrutura como Código</h2>
+            <h3>Infraestrutura Mutável vs Imutável</h3>
+            <div class="two-column">
+                <div>
+                    <h3 style="color: #e94560;">🔧 Mutável</h3>
+                    <ul>
+                        <li>Pode ser modificada após criação</li>
+                        <li>Updates in-place</li>
+                        <li>Risco de configuration drift</li>
+                        <li><strong>Exemplo:</strong> Servidores tradicionais, bancos de dados stateful</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="color: #4ecca3;">🔒 Imutável</h3>
+                    <ul>
+                        <li>Não muda após criação</li>
+                        <li>Substituir ao invés de modificar</li>
+                        <li>Consistência garantida</li>
+                        <li><strong>Exemplo:</strong> Containers, AMIs, serverless</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="highlight">
+                <strong>Melhor prática moderna:</strong> Imutável para serviços stateless + Mutável para dados stateful = Abordagem híbrida
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 19: Analogia Pets vs Cattle -->
+    <div class="slide">
+        <div class="content">
+            <h2>Infraestrutura como Código</h2>
+            <h3>Analogia: Pets vs Cattle (Gado)</h3>
+            <div class="two-column">
+                <div>
+                    <h3 style="color: #e94560;">🐕 Pets (Animais de Estimação)</h3>
+                    <p><strong>Infraestrutura Mutável Tradicional</strong></p>
+                    <ul>
+                        <li>Cada servidor tem um <strong>nome único</strong></li>
+                        <li>Cuidado manual e individual</li>
+                        <li>Quando fica doente, você <strong>trata e cura</strong></li>
+                        <li>Difícil de substituir</li>
+                        <li>Configuração manual e snowflake</li>
+                        <li><em>Ex: "servidor-producao-01" com configs específicas</em></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="color: #4ecca3;">🐄 Cattle (Gado)</h3>
+                    <p><strong>Infraestrutura Imutável Moderna</strong></p>
+                    <ul>
+                        <li>Servidores são <strong>numerados</strong> (web-01, web-02...)</li>
+                        <li>Gerenciamento automatizado em massa</li>
+                        <li>Quando fica doente, você <strong>substitui</strong></li>
+                        <li>Facilmente substituível</li>
+                        <li>Provisionado por código (IaC)</li>
+                        <li><em>Ex: Auto-scaling group com instâncias idênticas</em></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="highlight">
+                <strong>DevOps moderno:</strong> Trate sua infraestrutura como gado, não como pets! Isso facilita escalabilidade, recuperação e automação.
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 20: Diagrama IaC Workflow -->
+    <div class="slide">
+        <div class="content">
+            <h2>Infraestrutura como Código</h2>
+            <h3>Workflow Completo</h3>
+            <div style="text-align: center; margin-top: 2rem;">
+                <img src="images/automation-workflow.png" alt="Workflow Completo IaC" style="max-width: 90%; max-height: 500px; object-fit: contain;">
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 21: Seção Ferramentas -->
+    <div class="slide section-title">
+        <h1>Conteúdo 03<br><br>Ferramentas</h1>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 22: Git Intro -->
+    <div class="slide">
+        <div class="content">
+            <h2>Git - Controle de Versão</h2>
+            <p><strong>Sistema de Controle de Versão Distribuído (DVCS)</strong></p>
+            <div class="highlight" style="margin-bottom: 1.5rem;">
+                Criado por <strong>Linus Torvalds</strong> em <strong>2005</strong> para gerenciar o desenvolvimento do kernel Linux
+            </div>
+            <ul>
+                <li><strong>Histórico completo:</strong> Cada desenvolvedor tem cópia completa</li>
+                <li><strong>Rastreabilidade:</strong> Quem, quando, o que, por quê</li>
+                <li><strong>Branches:</strong> Trabalho paralelo sem conflitos</li>
+                <li><strong>Colaboração:</strong> Times globais trabalhando juntos</li>
+            </ul>
+            <div class="highlight">
+                <strong>Essencial:</strong> Todo código de infraestrutura DEVE estar no Git
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 23: Git Comandos -->
+    <div class="slide">
+        <div class="content">
+            <h2>Git - Comandos Essenciais</h2>
+            <div class="two-column">
+                <div>
+                    <p><strong>Básicos:</strong></p>
+                    <ul>
+                        <li><code>git init</code> - Criar repositório local</li>
+                        <li><code>git clone</code> - Copiar repositório remoto</li>
+                        <li><code>git status</code> - Ver estado atual</li>
+                    </ul>
+                    <p><strong>Workflow:</strong></p>
+                    <ul>
+                        <li><code>git add</code> - Preparar mudanças (staging)</li>
+                        <li><code>git commit</code> - Salvar snapshot</li>
+                        <li><code>git push</code> - Enviar para remoto</li>
+                        <li><code>git pull</code> - Baixar atualizações</li>
+                    </ul>
+                </div>
+                <div>
+                    <p><strong>Branches:</strong></p>
+                    <ul>
+                        <li><code>git branch</code> - Listar/criar branches</li>
+                        <li><code>git checkout</code> - Trocar de branch</li>
+                        <li><code>git merge</code> - Mesclar branches</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 23: Git Workflow Diagram -->
+    <div class="slide">
+        <div class="content">
+            <h2>Git - Como Funciona</h2>
+            <div style="text-align: center; margin-top: 2rem;">
+                <img src="images/git.png" alt="Git Workflow" style="max-width: 90%; max-height: 550px; object-fit: contain;">
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 24: Comparativo GitFlow vs TBD -->
+    <div class="slide">
+        <div class="content">
+            <h2 style="margin-bottom: 1.5rem;">Git - Estratégias de Branching</h2>
+            <div class="two-column">
+                <div>
+                    <h3 style="color: #e94560; margin-bottom: 1rem;">GitFlow (Tradicional)</h3>
+                    <ul style="font-size: 1.05rem;">
+                        <li><strong>Fluxo:</strong> feature → develop → release → main</li>
+                        <li><strong>Branches permanentes:</strong> main + develop</li>
+                        <li><strong>Branches temporárias:</strong> feature/*, release/*, hotfix/*</li>
+                        <li><strong>Integração:</strong> Semanal/quinzenal</li>
+                        <li><strong>Deploy:</strong> Releases programados</li>
+                        <li><strong>Complexidade:</strong> Alta (muitas branches)</li>
+                        <li><strong>Ideal para:</strong> Software empresarial, mobile, múltiplas versões</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="color: #4ecca3; margin-bottom: 1rem;">Trunk-Based (Moderno)</h3>
+                    <ul style="font-size: 1.05rem;">
+                        <li><strong>Fluxo:</strong> feature → main (direto)</li>
+                        <li><strong>Branches permanentes:</strong> main apenas</li>
+                        <li><strong>Branches temporárias:</strong> feature/* (curtas, 1-2 dias)</li>
+                        <li><strong>Integração:</strong> Múltipla por dia</li>
+                        <li><strong>Deploy:</strong> Contínuo (CI/CD)</li>
+                        <li><strong>Complexidade:</strong> Baixa (poucas branches)</li>
+                        <li><strong>Ideal para:</strong> SaaS, web apps, DevOps teams</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 25: GitFlow - Diagrama -->
+    <div class="slide">
+        <div class="content">
+            <h2>Git - GitFlow</h2>
+            <h3>Estrutura de Branches</h3>
+            <div style="text-align: center; margin-top: 2rem;">
+                <img src="images/gitflow.png" alt="GitFlow Diagram" style="max-width: 90%; max-height: 500px; object-fit: contain;">
+            </div>
+            <p style="text-align: center; margin-top: 1rem;"><strong>Estrutura:</strong> main/master → develop → feature/* | release/* | hotfix/*</p>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 26: Trunk-Based Development - Diagrama -->
+    <div class="slide">
+        <div class="content">
+            <h2>Git - Trunk-Based Development</h2>
+            <h3>Fluxo Simplificado</h3>
+            <div style="text-align: center; margin-top: 2rem;">
+                <img src="images/tbd.png" alt="Trunk-Based Development Diagram" style="max-width: 90%; max-height: 500px; object-fit: contain;">
+            </div>
+            <p style="text-align: center; margin-top: 1rem;"><strong>Fluxo:</strong> main/trunk ← feature branches curtas (merges frequentes) → CI/CD → Deploy</p>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 26: GitHub -->
+    <div class="slide">
+        <div class="content">
+            <h2>GitHub - Plataforma Colaborativa</h2>
+            <p><strong>Mais que armazenamento de código:</strong></p>
+            <ul>
+                <li><strong>Pull Requests:</strong> Code review colaborativo</li>
+                <li><strong>Issues:</strong> Rastreamento de bugs e features</li>
+                <li><strong>GitHub Actions:</strong> CI/CD integrado</li>
+                <li><strong>Projects:</strong> Gestão de projetos</li>
+                <li><strong>Segurança:</strong> Dependabot, secret scanning</li>
+                <li><strong>Documentação:</strong> Wikis e GitHub Pages</li>
+            </ul>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 27: Terraform -->
+    <div class="slide">
+        <div class="content">
+            <h2>Terraform - Provisionamento</h2>
+            <p><strong>Ferramenta declarativa para provisionar infraestrutura</strong></p>
+            <ul>
+                <li><strong>Multi-cloud:</strong> AWS, Azure, GCP, etc.</li>
+                <li><strong>HCL:</strong> Linguagem própria legível</li>
+                <li><strong>State:</strong> Rastreia recursos criados</li>
+                <li><strong>Plan:</strong> Preview antes de aplicar</li>
+                <li><strong>Modules:</strong> Componentes reutilizáveis</li>
+            </ul>
+            <div class="highlight">
+                <strong>Uso:</strong> "Quero 3 EC2, 1 RDS, 1 VPC com estas specs"
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 28: Ansible -->
+    <div class="slide">
+        <div class="content">
+            <h2>Ansible - Gerenciamento de Configuração</h2>
+            <div class="two-column">
+                <div>
+                    <p><strong>Automação de configuração e deployment</strong></p>
+                    <ul>
+                        <li><strong>Agentless:</strong> Usa SSH, sem instalação</li>
+                        <li><strong>YAML:</strong> Playbooks legíveis</li>
+                        <li><strong>Idempotente:</strong> Múltiplas execuções seguras</li>
+                        <li><strong>Inventory:</strong> Gerencia múltiplos hosts</li>
+                        <li><strong>Roles:</strong> Organização modular</li>
+                    </ul>
+                    <div class="highlight">
+                        <strong>Uso:</strong> "Instale nginx, configure, inicie o serviço"
+                    </div>
+                </div>
+                <div>
+                    <p><strong>Ansible Galaxy:</strong></p>
+                    <ul>
+                        <li><strong>Repositório público</strong> de roles e collections</li>
+                        <li><strong>Comunidade ativa:</strong> milhares de roles prontos</li>
+                        <li><strong>Reutilização:</strong> não reinvente a roda</li>
+                        <li><code>ansible-galaxy install</code> para baixar roles</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>Collections:</strong></p>
+                    <ul>
+                        <li>Pacotes de módulos, roles e plugins</li>
+                        <li>Integração com AWS, Azure, GCP, etc.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 29: Terraform + Ansible -->
+    <div class="slide">
+        <div class="content">
+            <h2>Terraform + Ansible</h2>
+            <h3>Combinação Poderosa</h3>
+            <div class="two-column">
+                <div>
+                    <p><strong>Terraform:</strong></p>
+                    <ul>
+                        <li>Cria a infraestrutura base</li>
+                        <li>VPCs, Subnets, Security Groups</li>
+                        <li>Servidores, Load Balancers</li>
+                        <li>Bancos de dados</li>
+                    </ul>
+                </div>
+                <div>
+                    <p><strong>Ansible:</strong></p>
+                    <ul>
+                        <li>Configura os servidores criados</li>
+                        <li>Instala pacotes e dependências</li>
+                        <li>Deploy de aplicações</li>
+                        <li>Gerencia serviços e configs</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 30: Packer -->
+    <div class="slide">
+        <div class="content">
+            <h2>Packer - Criação de Imagens</h2>
+            <p><strong>Automatiza criação de imagens imutáveis</strong></p>
+            <ul>
+                <li><strong>Multi-plataforma:</strong> AMIs, Docker, VMware, etc.</li>
+                <li><strong>Golden Images:</strong> Pré-configuradas e prontas</li>
+                <li><strong>Provisioners:</strong> Usa Ansible/Shell para config</li>
+                <li><strong>Deploy rápido:</strong> Instâncias já configuradas</li>
+                <li><strong>Imagens seguras:</strong> Times de segurança criam imagens hardened com patches, CIS benchmarks e políticas aplicadas</li>
+            </ul>
+            <div class="highlight">
+                <strong>DevSecOps:</strong> Infraestrutura imutável + segurança desde o build = menos vulnerabilidades em produção
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 31: Packer Workflow -->
+    <div class="slide">
+        <div class="content">
+            <h2>Packer - Workflow</h2>
+            <div style="text-align: center; margin-top: 2rem;">
+                <img src="images/packer.png" alt="Packer Workflow" style="max-width: 90%; max-height: 550px; object-fit: contain;">
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 32: Stack Completo -->
+    <div class="slide">
+        <div class="content">
+            <h2>Stack Completo de IaC</h2>
+            <h3>Packer + Terraform + Ansible</h3>
+            <div style="text-align: center; margin-top: 2rem;">
+                <img src="images/packer-terraform.png" alt="Stack Completo IaC" style="max-width: 90%; max-height: 450px; object-fit: contain;">
+            </div>
+            <div class="highlight">
+                <strong>Workflow:</strong> (1) Packer + Ansible criam Imagem → (2) Terraform provisiona Infraestrutura usando a Imagem = Deploy automatizado
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 32: Intervalo -->
+    <div class="slide section-title">
+        <h1>☕ Intervalo<br><br>20 minutos<br><br>Voltamos às 20:40h</h1>
+    </div>
+
+    <!-- Slide 33: Seção Prática -->
+    <div class="slide section-title">
+        <h1>Conteúdo 04<br><br>Prática</h1>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 35: Repositório -->
+    <div class="slide">
+        <div class="content">
+            <h2>Prática</h2>
+            <h3>Repositório GitHub</h3>
+            <div class="two-column" style="align-items: center;">
+                <div>
+                    <div class="highlight" style="text-align: center; font-size: 1.8rem; margin: 2rem 0;">
+                        <a href="https://github.com/Engenharia-de-Plataforma-FAST/fast-iac" target="_blank" style="color: #ff6b35; text-decoration: none;">github.com/Engenharia-de-Plataforma-FAST/fast-iac</a>
+                    </div>
+                    <p><strong>O que vamos fazer:</strong></p>
+                    <ul>
+                        <li>Clonar o repositório</li>
+                        <li>Configurar credenciais AWS</li>
+                        <li>Provisionar infraestrutura com Terraform</li>
+                        <li>Validar recursos criados</li>
+                        <li>Destruir recursos (evitar custos)</li>
+                    </ul>
+                </div>
+                <div style="text-align: center;">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://github.com/Engenharia-de-Plataforma-FAST/fast-iac" alt="QR Code repositório" style="max-width: 250px; border: 4px solid #ff6b35; border-radius: 10px; padding: 10px; background: white;">
+                    <p style="font-size: 0.9rem; margin-top: 1rem; color: #ff6b35;"><strong>Escaneie para acessar!</strong></p>
+                </div>
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 37: Arquitetura Simples -->
+    <div class="slide">
+        <div class="content">
+            <h2>Prática - Arquitetura Simples</h2>
+            <div style="text-align: center; margin-top: 3rem;">
+                <img src="images/lab-ec2.png" alt="Arquitetura Simples AWS" style="max-width: 95%; max-height: 600px; object-fit: contain;">
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 38: Arquitetura Completa -->
+    <div class="slide">
+        <div class="content">
+            <h2>Prática</h2>
+            <h3>Arquitetura Completa (Avançado)</h3>
+            <div style="text-align: center; margin-top: 2rem;">
+                <img src="images/lab-alb.png" alt="Arquitetura Completa AWS" style="max-width: 90%; max-height: 550px; object-fit: contain;">
+            </div>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 39: Best Practices -->
+    <div class="slide">
+        <div class="content">
+            <h2>Boas Práticas em IaC</h2>
+            <ul>
+                <li><strong>Versionamento:</strong> Sempre use Git para IaC</li>
+                <li><strong>State remoto:</strong> Armazene state no S3/Terraform Cloud</li>
+                <li><strong>Módulos:</strong> Crie componentes reutilizáveis</li>
+                <li><strong>Secrets:</strong> NUNCA commite credenciais (use AWS Secrets Manager)</li>
+                <li><strong>Code Review:</strong> Pull requests para mudanças de infraestrutura</li>
+                <li><strong>Ambientes separados:</strong> Dev, Staging, Production isolados</li>
+                <li><strong>Testes:</strong> Valide IaC antes de aplicar (terraform validate, tflint)</li>
+                <li><strong>Documentação:</strong> README com instruções claras</li>
+            </ul>
+        </div>
+        <div class="footer">© CESAR 2025 | Todos os Direitos Reservados</div>
+    </div>
+
+    <!-- Slide 39: Dúvidas -->
+    <div class="slide section-title">
+        <h1>❓<br><br>DÚVIDAS?</h1>
+    </div>
+
+    <!-- Slide 42: Encerramento -->
+    <div class="slide cover">
+        <h1>MUITO OBRIGADO!</h1>
+        <div class="subtitle">Continue praticando IaC! 🚀</div>
+        <div class="footer">© CESAR 2025 | Todos os direitos reservados</div>
+    </div>
+
+    <div class="nav-hint">Use as setas ← → ou espaço para navegar</div>
+    <div class="slide-counter"><span id="current">1</span> / <span id="total">43</span></div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current').textContent = currentSlide + 1;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                showSlide(currentSlide + 1);
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                showSlide(currentSlide - 1);
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                showSlide(0);
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                showSlide(totalSlides - 1);
+            }
+        });
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchStartX - touchEndX > 50) {
+                showSlide(currentSlide + 1);
+            } else if (touchEndX - touchStartX > 50) {
+                showSlide(currentSlide - 1);
+            }
+        });
+    </script>
+
+</body>
+</html>
