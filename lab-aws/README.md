@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-Laboratórios completos de Infraestrutura como Código usando Terraform, Packer e Ansible para construir e implantar infraestrutura AWS. Este repositório contém 5 laboratórios progressivos que ensinam práticas modernas de DevOps para provisionamento de infraestrutura, gerenciamento de configuração e construção de imagens.
+Laboratórios completos de Infraestrutura como Código usando Terraform, Packer e Ansible para construir e implantar infraestrutura AWS. Este repositório contém 7 laboratórios progressivos que ensinam práticas modernas de DevOps para provisionamento de infraestrutura, gerenciamento de configuração e construção de imagens.
 
 ## Pré-requisitos
 
@@ -693,6 +693,184 @@ PROFILE=batatinha BUCKET=fast-2025-iac-lab3 INSTANCE_AMI=fast-* AMI_OWNER=self C
 # Importante: Destruir para evitar cobranças do NAT Gateway e Load Balancer
 ```
 
+## Lab 7: Usando Módulos Oficiais da AWS
+
+**Objetivo:** Construir a mesma infraestrutura enterprise usando módulos oficiais da comunidade Terraform (terraform-aws-modules)
+
+**Duração:** 25-35 minutos
+**Custo:** ~$48/mês (destruir após o laboratório)
+**Pré-requisitos:** Lab 3 completo (AMI customizada criada)
+
+### O que é diferente
+
+Este lab demonstra como usar **módulos mantidos pela comunidade** em vez de escrever código próprio:
+
+- **Módulos oficiais**: terraform-aws-modules/* do Terraform Registry
+- **Manutenção**: Mantidos pela comunidade, atualizados regularmente
+- **Melhores práticas**: Seguem padrões da AWS e Terraform
+- **Menos código**: ~350 linhas vs ~500 linhas (Lab 6)
+- **Produção-ready**: Testados em milhares de projetos
+
+### Módulos Utilizados
+
+| Componente | Módulo Oficial | Versão |
+|------------|---------------|--------|
+| **VPC** | terraform-aws-modules/vpc/aws | ~> 6.5 |
+| **Security Groups** | terraform-aws-modules/security-group/aws | ~> 5.1 |
+| **EC2 Instances** | terraform-aws-modules/ec2-instance/aws | ~> 6.1 |
+| **Load Balancer** | terraform-aws-modules/alb/aws | ~> 9.11 |
+
+### Estrutura do Projeto
+
+```
+terraform/infra-04/
+├── main.tf           # ~350 linhas - usa módulos oficiais
+├── variables.tf      # Variáveis de configuração
+├── outputs.tf        # Outputs usando módulos
+├── bootstrap.sh      # Script de configuração do backend S3
+├── provision.sh      # Script de provisionamento
+└── destroy.sh        # Script de limpeza
+```
+
+### Vantagens dos Módulos Oficiais
+
+**1. Menos código para escrever**
+- VPC Module: ~15 linhas vs ~200 linhas de código próprio
+- Security Groups: ~30 linhas vs ~150 linhas
+- Foco no "o que" ao invés de "como"
+
+**2. Melhores práticas embutidas**
+- Configurações padrão otimizadas
+- Validações e verificações automáticas
+- Suporte a features avançadas
+
+**3. Manutenção pela comunidade**
+- Atualizações regulares
+- Correções de segurança
+- Suporte a novas features da AWS
+
+**4. Documentação extensa**
+- Exemplos de uso no Terraform Registry
+- Issues e Pull Requests no GitHub
+- Comunidade ativa
+
+### Passo 1: Configurar Backend S3
+
+```bash
+cd terraform/infra-04
+
+# Opção 1: Usar variáveis de ambiente (recomendado)
+BUCKET=fast-2025-iac-lab4 REGION=us-east-1 PROFILE=batatinha ./bootstrap.sh
+
+# Opção 2: Modo interativo
+./bootstrap.sh
+```
+
+**Nota:** Este lab usa um bucket S3 **diferente** (fast-2025-iac-lab4) para manter os estados isolados.
+
+### Passo 2: Provisionar Infraestrutura
+
+```bash
+# Ainda em terraform/infra-04
+
+# Usar AMI customizada por nome (não ID)
+PROFILE=batatinha BUCKET=fast-2025-iac-lab4 INSTANCE_AMI=fast-* AMI_OWNER=self ./provision.sh
+
+# Ou especificar nome exato se você tiver múltiplas
+PROFILE=batatinha BUCKET=fast-2025-iac-lab4 INSTANCE_AMI=fast-20250119123456 AMI_OWNER=self ./provision.sh
+```
+
+### Recursos Criados
+
+Idênticos aos Labs 5 e 6:
+- 1 VPC (módulo terraform-aws-modules/vpc)
+- 4 Subnets - 2 públicas, 2 privadas
+- 1 Internet Gateway + 1 NAT Gateway
+- 3 Security Groups (módulo terraform-aws-modules/security-group)
+- 3 Instâncias EC2 (módulo terraform-aws-modules/ec2-instance)
+- 1 Application Load Balancer (módulo terraform-aws-modules/alb)
+
+### Padrões de Acesso
+
+```bash
+# Verificar todos os outputs
+terraform output
+
+# Acessar website via load balancer
+curl "$(terraform output -raw load_balancer_url)"
+
+# SSH para bastion host
+eval "$(terraform output -raw ssh_bastion_command)"
+
+# SSH para servidores web via bastion (ver comandos disponíveis)
+terraform output ssh_web_servers_commands
+
+# Conectar ao servidor web 1 (copie o primeiro comando da lista acima e execute)
+# Conectar ao servidor web 2 (copie o segundo comando da lista acima e execute)
+```
+
+### Exemplo: Comparação de Código
+
+**VPC - Código Próprio (Lab 6):**
+```hcl
+# ~200 linhas: resource "aws_vpc", "aws_subnet",
+# "aws_internet_gateway", "aws_nat_gateway",
+# "aws_route_table", "aws_route_table_association", etc.
+```
+
+**VPC - Módulo Oficial (Lab 7):**
+```hcl
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 6.5"
+
+  name = "${local.name_prefix}-vpc"
+  cidr = var.vpc_cidr
+
+  azs             = ["us-east-1a", "us-east-1b"]
+  public_subnets  = ["10.0.1.0/24", "10.0.4.0/24"]
+  private_subnets = ["10.0.2.0/24", "10.0.3.0/24"]
+
+  enable_nat_gateway = true
+  single_nat_gateway = true
+}
+# Apenas ~15 linhas!
+```
+
+### Comparação: Lab 6 vs Lab 7
+
+| Aspecto | Lab 6 (Módulos Próprios) | Lab 7 (Módulos Oficiais) |
+|---------|-------------------------|--------------------------|
+| **Linhas de código** | ~500 linhas (módulos) | ~350 linhas (main.tf) |
+| **Manutenção** | Você mantém | Comunidade mantém |
+| **Atualizações** | Manual | `terraform init -upgrade` |
+| **Documentação** | Você documenta | Registry + GitHub |
+| **Testes** | Você testa | Testado pela comunidade |
+| **Features** | O que você implementar | Todas disponíveis |
+| **Complexidade** | Média-Alta | Baixa |
+| **Customização** | Total | Via variáveis do módulo |
+
+### Quando Usar Módulos Oficiais vs Próprios
+
+**Use Módulos Oficiais quando:**
+- ✅ Precisa de features comuns e bem estabelecidas
+- ✅ Quer seguir melhores práticas da AWS
+- ✅ Precisa de manutenção e atualizações automáticas
+- ✅ Está começando um projeto novo
+
+**Use Módulos Próprios quando:**
+- ✅ Tem requisitos muito específicos/únicos
+- ✅ Precisa de controle total sobre implementação
+- ✅ Os módulos oficiais não atendem suas necessidades
+- ✅ Quer aprender como as coisas funcionam internamente
+
+### Limpeza
+
+```bash
+./destroy.sh
+# Importante: Destruir para evitar cobranças do NAT Gateway e Load Balancer
+```
+
 ## Principais Resultados de Aprendizado
 
 Após completar todos os laboratórios, você entenderá:
@@ -703,7 +881,9 @@ Após completar todos os laboratórios, você entenderá:
 - Backend remoto S3 para armazenamento de estado
 - Configuração de variáveis e saídas
 - **Módulos reutilizáveis e composição**
-- **Organização de código em arquitetura modular**
+- Organização de código em arquitetura modular
+- Uso de módulos oficiais da comunidade (terraform-aws-modules)
+- Comparação: módulos próprios vs módulos oficiais
 - Implantações multi-ambiente
 - Configuração do provider AWS
 
