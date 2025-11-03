@@ -198,12 +198,10 @@ lab-aws/
 │   │   └── index.html.j2        # Template do website
 │   └── vars/
 │       └── vars.yml             # Definições de variáveis
-├── packer/
-│   ├── build.sh                 # Script de construção de AMI
-│   ├── main.pkr.hcl            # Configuração principal do Packer
-│   └── variables.pkr.hcl       # Definições de variáveis
-└── docs/
-    └── terraform-improvements.md # Documentação adicional
+└── packer/
+    ├── build.sh                 # Script de construção de AMI
+    ├── main.pkr.hcl            # Configuração principal do Packer
+    └── variables.pkr.hcl       # Definições de variáveis
 ```
 
 ## Lab 1: Provisionamento Básico de Infraestrutura
