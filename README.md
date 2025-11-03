@@ -1,29 +1,73 @@
 # FAST - Bootcamp de Engenharia de Plataforma
 
+## Módulo 3 - IaC e Automação
 
-### Módulo 3 - IaC e Automação
+Bem-vindos aos laboratórios de **Infraestrutura como Código e Automação** do Módulo 3! 🚀
 
+Aqui você terá acesso a toda a prática ensinada durante as aulas, com laboratórios progressivos que cobrem desde conceitos básicos até arquiteturas enterprise completas.
 
-Bem-vindos aos laboratórios de Infraestrutura como Código e Automação do módulo 3. Aqui você terá acesso a toda a prática que é ensinada durante as aulas deste assunto. 
+### 📊 Slides das Aulas
 
-Pedimos clonem este repositório e pratiquem, mudem as configurações e evoluam este laboratório, pois só assim vocês poderam assimilar melhor todo o conteúde e práticas passadas durante as aulas, combinado? ;)
+Acesse a apresentação completa em: **[https://engenharia-de-plataforma-fast.github.io/fast-iac/](https://engenharia-de-plataforma-fast.github.io/fast-iac/)**
 
-Para fazer o clone basta executar o comando abaixo no terminal:
+---
 
-``` bash
+## 🚀 Começando
+
+Clone este repositório e pratique! Mude as configurações, evolua os laboratórios e experimente diferentes cenários. A prática é essencial para assimilar os conceitos de IaC!
+
+```bash
 git clone git@github.com:Engenharia-de-Plataforma-FAST/fast-iac.git
+cd fast-iac
 ```
 
-Dentro deste repositório temos 3 laboratórios os quais são trabalhados dentro do módulo:
+---
 
-#### Laboratório 1: Vagrant + Ansible (Local)
+## 📚 Laboratórios
 
-Este laboratório utiliza Vagrant para provisionar uma máquina virtual CentOS 8 localmente no VirtualBox e Ansible para configurar automaticamente um ambiente completo de CI/CD. Você aprenderá a criar e gerenciar VMs de forma declarativa, além de implantar uma stack containerizada com Jenkins e SonarQube usando Docker Swarm. Ideal para desenvolvimento local e testes de automação. O código está disponível no diretório [lab-vagrant-ansible/](./lab-vagrant-ansible/).
+Este repositório contém 3 laboratórios progressivos:
 
-#### Laboratório 2: Terraform + Ansible (GCP)
+### 🔧 Laboratório 1: Vagrant + Ansible (Local)
 
-Este laboratório demonstra a integração entre Terraform e Ansible para provisionar e configurar infraestrutura no Google Cloud Platform. Você criará uma instância Compute Engine usando Terraform, que automaticamente executa playbooks Ansible para configurar um ambiente CI/CD com Jenkins e SonarQube. O laboratório ensina boas práticas de IaC incluindo gerenciamento de estado, variáveis e provisionamento remoto. O código está disponível no diretório [lab-terraform-ansible/](./lab-terraform-ansible/).
+**Ambiente:** Local (VirtualBox)
+**Ferramentas:** Vagrant, Ansible, Docker Swarm
 
-#### Laboratório 3: Packer + Terraform + Ansible (AWS)
+Provisione uma máquina virtual CentOS 8 localmente e configure automaticamente um ambiente completo de CI/CD com Jenkins e SonarQube. Ideal para desenvolvimento local e testes de automação.
 
-Este laboratório combina as três principais ferramentas de IaC para criar uma solução completa de automação na AWS. Você aprenderá a criar AMIs customizadas com Packer, provisionar infraestrutura com Terraform e configurar servidores com Ansible, integrando todas as ferramentas em um fluxo de trabalho DevOps moderno. O laboratório inclui desde deployments básicos até arquiteturas enterprise com alta disponibilidade, load balancers e bastion hosts. Para instruções detalhadas e execução dos 5 labs progressivos, consulte a [documentação completa](./lab-aws/README.md).
+📂 **Código:** [lab-vagrant-ansible/](./lab-vagrant-ansible/)
+
+---
+
+### ☁️ Laboratório 2: Terraform + Ansible (GCP)
+
+**Ambiente:** Google Cloud Platform
+**Ferramentas:** Terraform, Ansible
+
+Aprenda a integração entre Terraform e Ansible para provisionar e configurar infraestrutura na nuvem. Crie instâncias Compute Engine e configure ambientes CI/CD de forma automatizada, seguindo boas práticas de IaC.
+
+📂 **Código:** [lab-terraform-ansible/](./lab-terraform-ansible/)
+
+---
+
+### 🏗️ Laboratório 3: Packer + Terraform + Ansible (AWS)
+
+**Ambiente:** Amazon Web Services
+**Ferramentas:** Packer, Terraform, Ansible
+**Laboratórios:** 7 labs progressivos
+
+A stack completa de IaC! Crie AMIs customizadas com Packer, provisione infraestrutura com Terraform e configure servidores com Ansible. Desde deployments básicos até arquiteturas enterprise com alta disponibilidade, load balancers e bastion hosts.
+
+📂 **Código e Documentação Completa:** [lab-aws/README.md](./lab-aws/README.md)
+
+---
+
+## 🎯 O que você vai aprender
+
+- ✅ Provisionamento automatizado de infraestrutura
+- ✅ Gerenciamento de configuração com Ansible
+- ✅ Criação de imagens imutáveis com Packer
+- ✅ Multi-cloud: Local, GCP e AWS
+- ✅ Boas práticas de IaC e DevOps
+- ✅ Arquiteturas de alta disponibilidade
+- ✅ Segurança e networking em nuvem
+
