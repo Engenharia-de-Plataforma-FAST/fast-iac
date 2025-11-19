@@ -199,3 +199,5 @@ terraform.rc
 */.terraform.lock.hcl
 .terraform.lock.hcl
 .terraform/
+
+.DS_Store
