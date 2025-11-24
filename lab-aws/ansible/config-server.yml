@@ -1,20 +1,34 @@
 ---
+- name: Check if docker is installed
+  command: docker --version
+  register: docker_check
+  failed_when: false
+  changed_when: false
+
 - name: Install docker
   package:
-    name: docker
-    state: latest
+    name: docker-25.0.6
+    state: present
+  when: docker_check.rc != 0
 
 - name: Install pip3
-  package: 
-    name: python3-pip 
-    state: latest 
+  package:
+    name: python3-pip
+    state: present
+
+- name: Check if docker pip package is installed
+  command: python3 -c "import docker; print(docker.__version__)"
+  register: docker_version_check
+  failed_when: false
+  changed_when: false
 
 - name: Install dependencies by pip required by ansible's docker module
   pip:
     name:
-      - docker==7.1.0 # pip index versions docker
+      - docker
     state: present
-    extra_args: --force-reinstall --no-deps
+    extra_args: --ignore-installed
+  when: docker_version_check.rc != 0
 
 - name: Enable Docker service on linux
   service:

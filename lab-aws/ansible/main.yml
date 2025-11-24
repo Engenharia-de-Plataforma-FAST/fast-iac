@@ -14,7 +14,7 @@
     - import_tasks: handlers/main.yml
   
   tasks:
-    - name: Config server
+    - name: Configure server with Docker and dependencies
       include_tasks: config-server.yml
 
     - name: Create application directory
@@ -28,25 +28,23 @@
         src: "docker-compose.yml.j2"
         dest: "{{ app_install_dir }}/docker-compose.yml"
         mode: "{{ compose_file_mode }}"
+      register: compose_file_created
 
     - name: Generate the website index file
       template:
         src: "index.html.j2"
         dest: "{{ app_install_dir }}/index.html"
         mode: "{{ html_file_mode }}"
+      register: html_file_created
 
     - name: Create and start the website (nginx) service
       docker_compose_v2:
         project_src: "{{ app_install_dir }}"
         state: present
-        recreate: always
-      register: output
+      register: docker_compose_result
+      when: compose_file_created.changed or html_file_created.changed
 
-    - name: Show results
+    - name: Show Docker Compose deployment status
       debug:
         msg: "Docker Compose deployment completed"
-
-    - name: Remove temporary docker-compose.yml file
-      file:
-        state: absent
-        path: "{{ app_install_dir }}/docker-compose.yml"
+      when: docker_compose_result.changed | default(false)
